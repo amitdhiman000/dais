@@ -30,7 +30,7 @@
 			#company_info { width: 15%; height: inherit; float: left; }
 			#logo { width: inherit; height: 50px; padding: 5px; }
 			#search_pan { position: relative; width: 40%; float: left; margin: 7px 2%; vertical-align: top;  }
-			#search_box { width:75%; height:30px;  border: 1px solid #AAA; }
+			#search_box { width:75%; height:30px;  border: 1px solid #AAA; background:url(/static/images/search-32.png) no-repeat right; }
 			#search_box:focus { border: 1px solid #222;  }
 			#search_button { width: 20%; height: 30px; color: #FEF; background: #555; border: 1px solid #222; }
 			#search_results { position: absolute; width: 75%; margin-top: 3px; border: 1px solid #AAA; z-index: 4; display: none; background: #FEF; }
@@ -109,7 +109,7 @@
 					</div>
 					<div id ="search_pan">
 						<form method="POST" action="javascript:(void)">
-							<input type="text" name="search_box" id="search_box" />
+							<input type="text" name="search_box" id="search_box" data-provide="typeahead" data-items="4" placeholder="Search..."  />
 							<button name="submit" id="search_button" >Search</button>
 						</form>
 						<div id="search_results" >

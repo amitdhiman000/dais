@@ -27,20 +27,23 @@
 			.text4 { font-size: 15px; font-family:"Helvetica"; color: #444; }
 			.hline { border-bottom: 1px dotted #222; width: 100%; margin: 0px auto;}
 
-			#header_bg { width:100%; height:50px; background: #FEF; border-bottom: 1px solid #222; }
-			#header_content { width: 95%; margin: 0px auto;}
-			#company_info { width: 20%; float: left; }
-			#logo { height: 30px; margin: 7px 2%; }
-			#search_pan { position: relative; width: 76%; float: left; margin: 7px 2%; vertical-align: top;  }
-			#search_box { width:75%; height:30px;  border: 1px solid #AAA; }
-			#search_box:focus { border: 1px solid #222;  }
-			#search_button { width: 20%; height: 30px; color: #FEF; background: #555; border: 1px solid #222; }
+			#header_bg { width:100%; height: 50px; background: #FEF; border-bottom: 1px solid #222; }
+			#header_content { width: 98%; height: inherit; margin: 0px auto; }
+			#company_info { width: 15%; height: 35px; float: left; margin: 5px 1%; border: 1px dotted #AAA; }
+			#logo { height: inherit; border: 1px solid #444; }
+			#logo img { min-width: 100%; min-height: 100%; max-width:100%; max-height:100%;  }
+			#search_box { width: 80%; height:35px; float: left; margin: 5px 1%; border: 1px solid #444; }
+			#search_box input { float:left; display: block; }
+			#search_input { width: 96%; height: 33px; border: 1px solid #AAA; }
+			#search_input:focus { border: 1px solid #222; }
+			#search_button { width: 4%; height: 33px; border: 1px solid #222; }
 			#search_results { position: absolute; width: 75%; margin-top: 3px; border: 1px solid #AAA; z-index: 4; display: none; background: #FEF; }
 			#search_results ul { list-style: none; }
 			#search_results li a { display: block; padding: 5px 20px; }
-			#user_status { width: 100%; }
+			#user_status { width: 100%; border-right: 1px solid #333; }
+			#user_status ul { width: 100%; background: #f1f1f1; }
 			#user_status ul li { float: left; }
-			#user_status ul li a { padding: 15px 20px; display: block; border-right: 1px dotted #333; }
+			#user_status ul li a { padding: 12px 25px; display: block; border-right: 1px dotted #333; }
 			#user_status ul li:last-child a { border: none; }
 			#user_status ul li a:hover { background: #CFC; }
 
@@ -52,7 +55,7 @@
 			.radio_label { text-align: center; vertical-align: baseline; }
 			input[type=radio] { background: #414141; }
 			input[type=radio]:checked { background: #a1a1a1; }
-			.inputBox { width: 100%; height: 25Px; border:1px solid #333; }
+			.inputBox { width: 100%; height: 25px; border:1px solid #333; }
 			.buttons { width: 40%; height: 27px; background: #414141; color: #FEF; cursor: pointer; }
 			.buttons:hover { background: #515151; }
 			.buttons-long { width: 250px; height: 27px; background: #414141; color: #FEF; cursor: pointer; }
@@ -62,8 +65,8 @@
 			.content_title { background: #414141; padding: 5px; color:#FEF; }
 			.content_body { padding: 5px; }
 
-			#container { position: relative; width: 100%; margin: 0px auto; clear: both; min-height: 450px; border: 1px dashed #555; }
-			#body_content { position: relative;  margin: 0px auto; margin-top: 10px;  border: 1px solid #AAA; }
+			#body_bg { width: 100%; margin: 0px auto; clear: both; min-height: 500px; border: 1px dotted #333;  }
+			#body_content { width: inherit; margin: 0px auto; margin-top: 10px; }
 
 			#footer_bg { position: relative; left: 0; bottom: 0; width: 100%; margin-top: 30px; height: 30px; line-height: 30px; background: #414141; color: #FEF; }
 			#footer_content { position: relative; width: 70%; height: inherit; margin: 0px auto; text-align: center; }
@@ -107,38 +110,38 @@
 						</div>
 						<!--<h5>MyOffers</h5>-->
 					</div>
-					<div id ="search_pan">
+					<div id ="search_box">
 						<form method="POST" action="javascript:(void)">
-							<input type="text" name="search_box" id="search_box" />
-							<button name="submit" id="search_button" >Search</button>
+							<input type="text" name="search_input" id="search_input" placeholder="Search..." />
+							<input type="image" name="search_button" id="search_button" src="/static/images/search-32.png" >
 						</form>
-						<div id="search_results" >
 
+						<div id="search_results" >
 						</div>
 					</div>
 				</div>
 			</div>
+			<!-- navigation bar -->
+			<nav>
+				<div id="user_status" class="cf">
+					<ul class="site-list cf">
+						<li><a href="/" >Home</a></li>
+						<li><a href="#" >Topics</a></li>
+						<li><a href="#" >Alerts</a></li>
+						<li>
+						{% if user.is_loggedin %}
+							<a href="/user/profile/">{{ user.name }}!</a>
+						{% else %}
+							<a href="/user/login/">SignIn</a>
+						{% endif %}
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<div class="clear"> </div>
 		</header>
-		<!-- navigation bar -->
-		<nav>
-			<div id="user_status" >
-				<ul class="site-list">
-					<li><a href="/" >Home</a></li>
-					<li><a href="#" >Topics</a></li>
-					<li><a href="#" >Alerts</a></li>
-					<li>
-					{% if user.is_loggedin %}
-						<a href="/user/profile/">{{ user.name }}!</a>
-					{% else %}
-						<a href="/user/login/">SignIn</a>
-					{% endif %}
-					</li>
-				</ul>
-			</div>
-		</nav>
-		<div class="clear"> </div>
-		
-		<div id="container" class="cf">
+
+		<div id="body_bg" class="cf">
 			<div id="body_content" class="cf">
 			{% block content %}
 
