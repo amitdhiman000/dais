@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from time import timezone
+#from time import timezone
 from datetime import datetime
+from django.utils import timezone
 from django.core.mail import send_mail
 from django.utils.translation import ugettext as _
 import hashlib
@@ -127,3 +128,47 @@ class Address(models.Model):
 	geo_long = models.CharField(max_length=10, blank=True)
 	geo_lat = models.CharField(max_length=10, blank=True)
 	fk_area_id = models.ForeignKey(Area, on_delete=models.CASCADE)
+
+
+class Topics(models.Model):
+	topic_name = models.CharField(max_length=50, blank=False)
+	topic_desc = models.CharField(max_length=100, blank=True)
+
+class Settings(models.Model):
+	pass;
+
+class Post(models.Model):
+	author = models.ForeignKey(Author, on_delete=models.CASCADE)
+	text = models.TextField()
+	created_date = models.DateTimeField(default=timezone.now)
+	edited_date = models.DateTimeField(default=timezone.now)
+	approved = models.BooleanField(default=False)
+
+	class Meta:
+		# it will not create the table for abstact class.
+		abstract = True
+		verbose_name = _('post')
+		verbose_name_plural= _('posts')
+
+	def set_approve(self):
+		self.approved = True
+		self.save()
+
+	def get_approve(self):
+		self.approved;
+
+	def __str__(self):
+		return self.text
+
+class Article(Post):
+	title = models.CharField(max_length=100, blank=False)
+	sub_title = models.CharField(max_length=200, blank=False)
+
+	def get_title(self):
+		return self.title
+
+	def get_sub_title(self):
+		return self.sub_title
+
+class Comment(Post):
+	reply_to = models.ForeignKey('self', on_delete=models.CASCADE)

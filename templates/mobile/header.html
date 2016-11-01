@@ -1,0 +1,63 @@
+{% load staticfiles %}
+	<script type="text/javascript" >
+		gActiveTab = 1;
+	</script>
+	
+	<div data-role="header" data-position="fixed" data-tap-toggle="false" >
+		<div id="header_top">
+			<div id="website_info">
+				<!-- website logo -->
+				<img src="{% static 'images/daislogo.jpg' %}" />
+			</div>
+			<div id="searchbox" data-role="main" class="ui-content" >
+				<form method="post" action="javascript:doSearch()">
+					<input type="search" name="search" id="search" value="" placeholder="Search here..." >
+				</form>
+			</div>
+		</div>
+		<div data-role="navbar" data-iconpos="left" >
+			<ul>
+				<li><a href="/" data-prefetch="true" data-transition="none" data-icon="home"
+				{% if page == 'home' %} 
+				class="ui-btn-active ui-state-persist"
+				{% endif %} >Home</a></li>
+				<li><a href="/home/topics" data-prefetch="true" data-transition="none" data-icon="grid" 
+				{% if page == 'topics' %} 
+				class="ui-btn-active ui-state-persist"
+				{% endif %} >Topics</a></li>
+				<li><a href="/home/alerts" data-prefetch="true" data-transition="none" data-icon="alert" 
+				{% if page == 'alerts' %} 
+				class="ui-btn-active ui-state-persist"
+				{% endif %} >Alerts</a></li>
+				
+				{% if page == 'signin' %}
+				<li><a href="/user/profile" data-icon="user" 
+				class="ui-btn-active ui-state-persist" >{{ username }}</a></li>
+				{% else %}
+				<li><a href="#popupLogin" data-rel="popup" data-position-to="window" data-transition="pop" data-icon="user" >
+				SignIn
+				</a></li>
+				{% endif %}
+			</ul>
+		</div>
+
+		<div data-role="popup" id="popupMenu" data-theme="a">
+			<div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all" data-dismissible="false" >
+			<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				<form>
+					<div style="padding:10px 20px;">
+					  <h3>Please sign in</h3>
+			          <label for="un" class="ui-hidden-accessible">Username:</label>
+			          <input type="text" name="user" id="un" value="" placeholder="username" data-theme="a" />
+
+			          <label for="pw" class="ui-hidden-accessible">Password:</label>
+			          <input type="password" name="pass" id="pw" value="" placeholder="password" data-theme="a" />
+
+			    	  <button type="submit" data-theme="a" data-icon="check">Sign in</button>
+			    	  <button type="submit" data-theme="a" data-icon="check">Sign up</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+	</div>
