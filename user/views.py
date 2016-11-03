@@ -4,35 +4,25 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
 from .control import UserRegControl
 from device import get_template
-
 ## debugging
 from pprint import pprint
 ## custom authentication class
 from . import backends as auth
-
-
 # Create your views here.
-
-def login_old(request):
-	c = {'title' : 'Login'};
-	title = 'Login'
-	t = get_template('login.html')
-	html = t.render(Context({'title' : title}))
-	return HttpResponse (html)
 
 
 def login(request):
-	c = {'title':'Login'}
+	data = {'title':'Login', 'page':'user'}
 
 	if 'form_errors' in request.session:
-		c['form_errors'] = request.session['form_errors']
-		c['form_values'] = request.session['form_values']
+		data['form_errors'] = request.session['form_errors']
+		data['form_values'] = request.session['form_values']
 		del request.session['form_errors']
 		del request.session['form_values']
 
-	c.update(csrf(request))
+	data.update(csrf(request))
 	file = get_template(request, 'login.html')
-	return render(request, file, c)
+	return render(request, file, data)
 
 
 def auth1(request):
@@ -61,20 +51,20 @@ def logout(request):
 
 #functions for registration
 def signup(request):
-	c = {'title':'Signup'}
-	c.update(csrf(request))
+	data = {'title':'Signup', 'page':'user'}
+	data.update(csrf(request))
 	if 'form_errors' in request.session:
-		c['form_errors'] = request.session['form_errors']
-		c['form_values'] = request.session['form_values']
+		data['form_errors'] = request.session['form_errors']
+		data['form_values'] = request.session['form_values']
 		del request.session['form_errors']
 		del request.session['form_values']
 
 	file = get_template(request, 'signup.html')
-	return render(request, file, c)
+	return render(request, file, data)
 
 
 def register(request):
-	c = {'title':'Registration Successful'}
+	data = {'title':'Registration Successful', 'page':'user'}
 	if request.method == 'POST':
 		control = None
 		user_type = request.POST.get('user_type', '')
@@ -84,7 +74,7 @@ def register(request):
 			if control.validate():
 				control.register()
 				file = get_template(request, 'registered.html')
-				return render(request, file, c)
+				return render(request, file, data)
 			else:
 				request.session['form_errors'] = control.get_errors()
 				request.session['form_values'] = control.get_values()
@@ -98,13 +88,13 @@ def loggedin(request):
 
 
 def profile(request):
-	c = {'title':'Profile'}
-	file = get_template('profile.html');
-	return render(request, file, c)
+	data = {'title':'Profile', 'page':'user'}
+	file = get_template(request, 'profile.html');
+	return render(request, file, data)
 
 
 def invalid(request):
-	c = {'title': 'Invalid'};
+	data = {'title': 'Invalid'};
 #	return HttpResponse ('This is Invalid Request')
-	file = get_template('profile.html')
-	return render(request, file, c)
+	file = get_template(request, 'profile.html')
+	return render(request, file, data)

@@ -9,24 +9,20 @@ from django.utils.translation import ugettext as _
 import hashlib
 
 
-class BaseUser(models.Model):
+class User(models.Model):
 	uid = models.IntegerField(primary_key=True, unique=True)
 	name = models.CharField(max_length=50, blank=False, default='')
-	email = models.CharField(max_length=50, unique=True, blank=False, default='')
+	email = models.EmailField()
 	password = models.CharField(max_length=32, blank=False, default='')
 	created = models.DateTimeField(auto_now_add=True, auto_now=False, blank=False, null=True)
 	phone = models.CharField(max_length=10, blank=True)
-
-	class Meta:
-		# it will not create the table for abstact class.
-		abstract = True
-		verbose_name = _('user')
-		verbose_name_plural= _('users')
+	status = models.IntegerField(default=1)
+	level = models.IntegerField(default=1)
 
 	def get_absolute_url(self):
 		return '/users/%s/' % urlquote(self.email)
 
-	def get_full_name(self):
+	def get_name(self):
 		return self.name
 	##
 	## Always return True, user object is created means loggedin.
@@ -40,35 +36,7 @@ class BaseUser(models.Model):
 		send_mail(subject, message, from_email, self.email)
 
 
-# Admin user class
-class Admin(BaseUser):
-	dob = models.CharField(max_length = 50)
-
-	class Meta:
-		verbose_name = _('Admin')
-		verbose_name_plural= _('Admins')
-
-
-# Vendor user class
-class Moderator(BaseUser):
-	#business = models.OneToOneField(Business)
-
-	class Meta:
-		verbose_name = _('Moderator')
-		verbose_name_plural= _('Moderators')
-
-
-# Author user class
-class Author(BaseUser):
-	#business = models.OneToOneField(Business)
-
-	class Meta:
-		verbose_name = _('Author')
-		verbose_name_plural= _('Authors')
-
-
 class Guest:
-
 	def __init__(self):
 		self.email = ''
 		self.name = 'Guest'
@@ -134,11 +102,9 @@ class Topics(models.Model):
 	topic_name = models.CharField(max_length=50, blank=False)
 	topic_desc = models.CharField(max_length=100, blank=True)
 
-class Settings(models.Model):
-	pass;
 
 class Post(models.Model):
-	author = models.ForeignKey(Author, on_delete=models.CASCADE)
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
 	text = models.TextField()
 	created_date = models.DateTimeField(default=timezone.now)
 	edited_date = models.DateTimeField(default=timezone.now)
@@ -155,7 +121,7 @@ class Post(models.Model):
 		self.save()
 
 	def get_approve(self):
-		self.approved;
+		return self.approved
 
 	def __str__(self):
 		return self.text
@@ -163,6 +129,23 @@ class Post(models.Model):
 class Article(Post):
 	title = models.CharField(max_length=100, blank=False)
 	sub_title = models.CharField(max_length=200, blank=False)
+
+	@classmethod
+	def create(self, post=None):
+		if post is None:
+			raise ValueError('post data can\'t be None')
+		email = post.get('email', None)
+		text = post.get('text', None)
+		if email is None or text is None:
+			raise ValueError('Values can\'t be None')
+
+		article = Article()
+		article.author = User.objects.get(email=email)
+		if article.author is None:
+			raise ValueError('user donsn\'t exist')
+
+		article.text = text
+		return article
 
 	def get_title(self):
 		return self.title

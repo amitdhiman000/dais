@@ -1,34 +1,18 @@
 {% extends 'mobile/base.html' %}
 
-{% load static %}
-
-{% block style %}
-<style type="text/css" >
-#mid-1 {  }
-#mid-1-left { float:left; }
-#mid-1-right { margin-left: 20px; float:left; }
-#mid-1-left  ul { list-style-type: none; width: 200px; background-color: #f1f1f1; }
-#mid-1-left  li a { display: block; color: #000; padding: 8px 0 8px 16px; }
-#mid-1-left  li a.active { background-color: #4CAF50; color: #FEF; }
-#mid-1-left  li a:hover:not(.active) { background-color: #555; color: #FEF; }
-</style>
-{% endblock %}
-
 {% block content %}
-
-<div id="mid-1">
-	<div id="mid-1-left">
-		<ul>
-			<li><a href="#home">Personal Details</a></li>
-			<li><a href="/offer/create">Crete Offer</a></li>
-			<li><a href="/offer/view">Manager Offers</a></li>
-			<li><a href="#messages">Messages</a></li>
-			<li><a href="#admin">Contact Admin</a></li>
-		</ul>
+<div data-role="page" id="indexpage" data-dom-cache="true" >
+	{% include 'mobile/header.html' %}
+	<a href="/user/logout/" class="ui-button" >Logout</a>
+	<div data-role="main" class="ui-content">
+		<h4> welcome {{user.name}} !!</h4>
+		<h3>Account Details :</h3>
+		<p>Email : {{user.email}}</p>
+		<p>Phone : {{user.phone}}</p>
+		<p>Status : {{user.status}}</p>
+		<p>Role : {{user.role}}</p>
 	</div>
-	<div id="mid-1-right">
-		<h1>Hi {{ user.name }}! </h1>
-		<h2>Welcome to Dais</h2>
-	</div>
+	{% include 'mobile/footer.html' %}
 </div>
+
 {% endblock %}

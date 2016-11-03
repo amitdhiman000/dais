@@ -1,10 +1,8 @@
 from functools import wraps
-
-from .models import BaseUser, Admin, Author, Guest
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-
+from .models import User, Guest
 
 USER_UID_KEY = '_user_uid'
 USER_NAME_KEY = '_user_name'
@@ -15,7 +13,7 @@ USER_AUTH_KEY = '_user_auth'
 def auth_user(username='', password=''):
 	user = None
 	try:
-		user = Author.objects.get(email=username, password=password)
+		user = User.objects.get(email=username, password=password)
 	except ObjectDoesNotExist:
 		user = None
 
@@ -25,8 +23,8 @@ def auth_user(username='', password=''):
 def get_user(request):
 	user = None
 	if USER_TYPE_KEY in request.session:
-		if request.session[USER_TYPE_KEY] == 'Author':
-			user = Author(name=request.session[USER_NAME_KEY])
+		if request.session[USER_TYPE_KEY] == 'User':
+			user = User(name=request.session[USER_NAME_KEY])
 	else:
 		user = Guest()
 

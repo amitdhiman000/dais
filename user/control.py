@@ -1,5 +1,5 @@
 import re
-from .models import Author
+from .models import User
 
 class BaseControl(object):
 
@@ -36,7 +36,7 @@ class UserRegControl(BaseControl):
 		self.m_valid = True
 		self.m_errors = {}
 		self.m_values = {}
-		self.m_user = Author()
+		self.m_user = User()
 		self.m_user.name = post.get('name', '').strip(' \t\n\r')
 		self.m_user.email = post.get('email', '').strip(' \t\n\r')
 		pass1 = post.get('pass1', '').strip(' \t\n\r')
@@ -83,7 +83,7 @@ class UserRegControl(BaseControl):
 				valid = False
 				self.m_errors['email'] = '*Invalid email address'
 			else:
-				is_duplicate = Author.objects.filter(email=self.m_user.email).exists()
+				is_duplicate = User.objects.filter(email=self.m_user.email).exists()
 				if is_duplicate:
 					valid = False
 					self.m_errors['email'] = '*Email already in use, Please try reset password'

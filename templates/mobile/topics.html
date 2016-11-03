@@ -9,10 +9,14 @@
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		<p>Current Topics</p>
+		<form action="/home/topics/add/" method="POST" >
+			{% csrf_token %}
+			user : <input name="email" type="text" >
+			article : <textarea style="resize: none;" name="text" ></textarea>
+			<input type="submit" name="submit" value="Submit" />
+		</form>
 	</div>
 
-	<div data-role="footer" data-position="fixed" data-tap-toggle="false" data-fullscreen="false" >
-		<h1>&copy; Dias 2015-16</h1>
-	</div>
+	{% include 'mobile/header.html' %}
 </div>
 {% endblock %}

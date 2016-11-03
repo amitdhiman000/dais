@@ -8,11 +8,14 @@
 <div data-role="page" id="indexpage" data-dom-cache="true" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
-		<p>Main Page..</p>
+		{% for article in articles %}
+		<h3>{{article.author.name}}</h3>
+		<hr />
+		<p>
+			{{article.text}}
+		</p>
+		{% endfor %}
 	</div>
-
-	<div data-role="footer" data-position="fixed" >
-		<h1>&copy; Dias 2015-16</h1>
-	</div>
+	{% include 'mobile/footer.html' %}
 </div>
 {% endblock %}
