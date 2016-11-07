@@ -47,16 +47,3 @@ def logout(request):
 	request.session.flush()
 	request.user = Guest()
 	#request._cached_user = request.user
-
-
-## Decorator function for chekcing the login status and redirect to login page
-##
-def login_required(funct):
-	#@warps(funct)
-	def decorator(request, *args, **kwargs):
-		print(request)
-		if request.user.is_loggedin() == False:
-			return HttpResponseRedirect(settings.USER_LOGIN_URL)
-		else:
-			return funct(request, *args, **kwargs)
-	return decorator;

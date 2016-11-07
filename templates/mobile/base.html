@@ -5,27 +5,21 @@
 <html lang="en">
 	<head>
 		<title>{{ title }} | Dais</title>
-		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> 
-		<!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />-->
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 		<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.mobile-1.4.5.min.css' %}" />
-		<!-- jquery min -->
-		<script type="text/javascript" src="{% static 'js/jquery-1.7.1.min.js' %}" >
+		<script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}" >
 		</script>
 		<script type="text/javascript">
-			//alert("loaded");
 			$(document).bind("mobileinit", function() {
-				//alert("mobileinit happened");
 				//$.mobile.page.prototype.options.keepNative = "select, input, button";
 			});
 		</script>
 		<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.5.min.js' %}" >
 		</script>
-		<!--
-		<script type="text/javascript" src="{% static 'js/pageload.js' %}" >
+		<script type="text/javascript" src="{% static 'js/app.js' %}" >
 		</script>
-		-->
 		<script type="text/javascript">
 			$(document).ready(function() {
 				/* search box*/
@@ -59,12 +53,6 @@
 		{% block script %}
 		{% endblock %}
 
-		<style>
-			#website_info { width:10%; float:left; }
-			#website_info img { width: 48px; height: 48px; }
-			#search_box { float:left; }
-			#search {  }
-		</style>
 		<!-- styles -->
 		{% block style %}
 		{% endblock %}

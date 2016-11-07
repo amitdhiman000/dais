@@ -5,15 +5,15 @@
 
 
 {% block content %}
-<div data-role="page" id="indexpage" data-dom-cache="true" >
+<div data-role="page" id="topicsaddpage" data-dom-cache="true" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		<p>Current Topics</p>
-		<form action="/home/topics/add/" method="POST" >
+		<form action="/user/topics/add/" method="POST" >
 			{% csrf_token %}
-			user : <input name="email" type="text" >
-			article : <textarea style="resize: none;" name="text" ></textarea>
-			<input type="submit" name="submit" value="Submit" />
+			Title : <input type="text" name="title" id="title" />
+			Abstract : <textarea name="text" id="text" style="resize: none;" ></textarea>
+			<input type="submit" name="submit" id="submit" value="Submit" />
 		</form>
 	</div>
 

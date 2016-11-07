@@ -1,19 +1,21 @@
 from django.conf import settings
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
-from .control import UserRegControl
 from device import get_template
+from common import redirect_if_loggedin, login_required
+## custom authentication
+from .control import UserRegControl
+from . import backends as auth
+
 ## debugging
 from pprint import pprint
-## custom authentication class
-from . import backends as auth
+
 # Create your views here.
 
-
+@redirect_if_loggedin
 def login(request):
 	data = {'title':'Login', 'page':'user'}
-
 	if 'form_errors' in request.session:
 		data['form_errors'] = request.session['form_errors']
 		data['form_values'] = request.session['form_values']
@@ -88,6 +90,7 @@ def loggedin(request):
 
 
 def profile(request):
+	print('request for profile')
 	data = {'title':'Profile', 'page':'user'}
 	file = get_template(request, 'profile.html');
 	return render(request, file, data)
@@ -98,3 +101,18 @@ def invalid(request):
 #	return HttpResponse ('This is Invalid Request')
 	file = get_template(request, 'profile.html')
 	return render(request, file, data)
+
+@login_required
+def add_topic(request):
+	try:
+		article = Article.create(request.POST)
+		article.save()
+	except ValueError as e:
+		print('ValueError : '+ str(e))
+	except:
+		print('Unknown error')
+
+	template = device.get_template(request, 'topics.html')
+	data = {'title':'Home', 'page':'topics'}
+	data.update(csrf(request))
+	return render(request, template, data)

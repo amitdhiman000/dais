@@ -26,4 +26,5 @@ urlpatterns = [
 	url(r'^invalid/$', views.invalid, name='invalid'),
 	url(r'^signup/$', views.signup, name='signup'),
 	url(r'^register/$', views.register, name='register'),
+	url(r'^topics/add/$', views.add_topic, name='add_topic')
 ]

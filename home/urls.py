@@ -21,6 +21,5 @@ urlpatterns = [
 	url(r'^$', views.index, name='index'),
 	url(r'^topics/$', views.topics, name='topics'),
 #   url(r'^topics/(?P<name>\w+)/$', views.topic_add, name='topic_add'),
-    url(r'^topics/add/$', views.topic_add, name='topic_add'),
 	url(r'^alerts/$', views.alerts, name='alerts'),
 ]
