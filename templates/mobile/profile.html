@@ -3,14 +3,12 @@
 {% block content %}
 <div data-role="page" id="indexpage" data-dom-cache="true" >
 	{% include 'mobile/header.html' %}
-	<a href="/user/logout/" class="ui-button" >Logout</a>
+	<a href="/user/logout/" class="ui-button" data-ajax="false" >Logout</a>
 	<div data-role="main" class="ui-content">
 		<h4> welcome {{user.name}} !!</h4>
 		<h3>Account Details :</h3>
 		<p>Email : {{user.email}}</p>
-		<p>Phone : {{user.phone}}</p>
-		<p>Status : {{user.status}}</p>
-		<p>Role : {{user.role}}</p>
+		<p>Level : {{user.level}}</p>
 	</div>
 	{% include 'mobile/footer.html' %}
 </div>

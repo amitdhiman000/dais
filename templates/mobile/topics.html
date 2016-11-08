@@ -5,7 +5,7 @@
 
 
 {% block content %}
-<div data-role="page" id="topicsaddpage" data-dom-cache="true" >
+<div data-role="page" id="topicsaddpage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		<p>Current Topics</p>
@@ -13,7 +13,7 @@
 			{% csrf_token %}
 			Title : <input type="text" name="title" id="title" />
 			Abstract : <textarea name="text" id="text" style="resize: none;" ></textarea>
-			<input type="submit" name="submit" id="submit" value="Submit" />
+			<input type="submit" name="submit" class="submit" value="Submit" />
 		</form>
 	</div>
 

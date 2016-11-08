@@ -5,15 +5,14 @@
 
 
 {% block content %}
-<div data-role="page" id="indexpage" data-dom-cache="true" >
+<div data-role="page" id="indexpage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		{% for article in articles %}
-		<h3>{{article.author.name}}</h3>
+		<h4>{{article.title}}</h4>
+		<h6>{{article.author.email}}</h6>
 		<hr />
-		<p>
-			{{article.text}}
-		</p>
+		<p>{{article.text}}</p>
 		{% endfor %}
 	</div>
 	{% include 'mobile/footer.html' %}

@@ -6,11 +6,11 @@ def auth(request):
     If there is no 'user' attribute in the request, uses AnonymousUser (from
     django.contrib.auth).
     """
-    #print('amit : our auth called')
+    print('amit : context_processor')
     if hasattr(request, 'user'):
         user = request.user
     else:
-        from accounts.models import AnonymousUser
-        user = AnonymousUser()
+        from user.models import Guest
+        user = Guest()
 
     return {'user': user,}

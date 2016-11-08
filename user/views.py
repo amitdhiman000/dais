@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
 from device import get_template
-from common import redirect_if_loggedin, login_required
+from common import redirect_if_loggedin, login_required, __redirect
 ## custom authentication
+from .models import Article
 from .control import UserRegControl
 from . import backends as auth
 
@@ -31,25 +32,24 @@ def auth1(request):
 	if request.method == 'POST':
 		username = request.POST.get('user', '')
 		password = request.POST.get('pass', '')
-		#user = auth.authenticate(username=username, password=password)
 		user = auth.auth_user(username=username, password=password)
 
 		if user is not None:
 			pprint(vars(user))
 			auth.login(request, user)
 			#request.session.set_expiry(10)
-			return HttpResponseRedirect(settings.USER_PROFILE_URL)
+			return __redirect(request, settings.USER_PROFILE_URL)
 		else:
 			form_errors = {'user':'*Username or password is wrong!!'}
 			form_values = {'user':request.POST.get('user', '')}
 			request.session['form_errors'] = form_errors
 			request.session['form_values'] = form_values
-			return HttpResponseRedirect(settings.USER_LOGIN_URL)
+			return __redirect(request, settings.USER_LOGIN_URL)
 		return HttpResponse('Invalid request!!')
 
 def logout(request):
 	auth.logout(request)
-	return HttpResponseRedirect(settings.USER_LOGIN_URL)
+	return __redirect(request, settings.USER_LOGIN_URL)
 
 #functions for registration
 def signup(request):
@@ -80,8 +80,8 @@ def register(request):
 			else:
 				request.session['form_errors'] = control.get_errors()
 				request.session['form_values'] = control.get_values()
-				return HttpResponseRedirect(settings.USER_SIGNUP_URL)
-	return HttpResponseRedirect(settings.INVALID_REQUEST_URL)
+				return __redirect(request, settings.USER_SIGNUP_URL)
+	return __redirect(request, settings.INVALID_REQUEST_URL)
 
 
 
@@ -104,15 +104,20 @@ def invalid(request):
 
 @login_required
 def add_topic(request):
+	pprint(request.POST)
 	try:
-		article = Article.create(request.POST)
+		article = Article.create(request)
 		article.save()
 	except ValueError as e:
 		print('ValueError : '+ str(e))
 	except:
 		print('Unknown error')
 
-	template = device.get_template(request, 'topics.html')
-	data = {'title':'Home', 'page':'topics'}
-	data.update(csrf(request))
-	return render(request, template, data)
+	## send the response
+	if request.is_ajax():
+		return JsonResponse({'status':204, 'message': 'Successfully published'})
+	else:
+		template = get_template(request, 'topics.html')
+		data = {'title':'Home', 'page':'topics'}
+		data.update(csrf(request))
+		return render(request, template, data)

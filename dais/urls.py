@@ -20,7 +20,7 @@ from django.contrib import admin
 #import home
 
 urlpatterns = [
-    url(r'^$', include('home.urls')),
+    url(r'^', include('home.urls')),
     url(r'^home/', include('home.urls')),
     url(r'^user/', include('user.urls')),
     url(r'^ajax/', include('ajax.urls')),

@@ -131,19 +131,21 @@ class Article(Post):
 	sub_title = models.CharField(max_length=200, blank=False)
 
 	@classmethod
-	def create(self, post=None):
+	def create(self, request):
+		post = request.POST
 		if post is None:
 			raise ValueError('post data can\'t be None')
-		email = post.get('email', None)
+		title = post.get('title', None)
 		text = post.get('text', None)
-		if email is None or text is None:
+		if title is None or text is None:
 			raise ValueError('Values can\'t be None')
 
 		article = Article()
-		article.author = User.objects.get(email=email)
+		article.author = User.objects.get(email=request.user.email)
 		if article.author is None:
 			raise ValueError('user donsn\'t exist')
 
+		article.title = title
 		article.text = text
 		return article
 

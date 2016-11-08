@@ -2,7 +2,8 @@ $(document).on('pageinit', '#topicsaddpage', function() {
     $(document).on('click', '#submit', function(event) {
         event.preventDefault();
         if(0 === $('#title').val().length && 0 === $('#text').val().length){
-            alert('Please fill the values');
+            alert('Please fill the credentials');
+            show_toast('Please fill the credentials');
             return;
         }
         show_toast('form submitted');
@@ -17,7 +18,7 @@ $(document).on('pageinit', '#topicsaddpage', function() {
             data: {action : formAction, formData : form.serialize()},
             type: 'POST',
             async: 'true',
-            dataType: 'json',
+            dataType: 'html',
             beforeSend: function(xhr) {
                 console.log('beforeSend');
                 console.log(cookie.get('csrftoken'));
@@ -29,28 +30,24 @@ $(document).on('pageinit', '#topicsaddpage', function() {
                 console.log('comeplete :'+ response.status);
                 $.mobile.loading('hide'); // This will hide ajax spinner
                 switch(response.status) {
-                case 201:
-                    show_toast('user not found');
-                    break;
                 case 302:
-                    show_toast('redirect request');
-                    //location.href = response.getResponseHeader("Location");
+                    redirectUrl = response.getResponseHeader("Location");
+                    console.log('redirectUrl : '+ redirectUrl);
+                    location.href = redirectUrl;
                     break;
                 default:
                     break;
-                    // notihng
                 }
                 console.log('complete done!!');
             },
             success: function (data) {
-                console.log('success');
+                console.log('success' + data);
             },
             error: function (xhr,error) {
                 console.log('error : '+ error + ', status : '+xhr.status);
                 show_toast('Network Error occured');
             }
         });
-        //return false; // cancel original event to prevent form submitting
     });
 });
 
