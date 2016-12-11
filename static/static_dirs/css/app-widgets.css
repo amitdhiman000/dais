@@ -1,0 +1,5 @@
+.switchtab { border: 1px solid #888; background: "#FFF"; }
+.switchtab-items { display: table; table-layout: fixed; width:100%; }
+.switchtab-items a { display: table-cell; padding:0.5em; text-align:center; text-decoration:none; color:#555; border:1px solid #888; border-collapse: collapse; }
+.switchtab-items a:hover { text-decoration:underline; color:#555; }
+.switchtab-items a.activeswitchtab { border: none; }

@@ -5,12 +5,13 @@
 
 
 {% block content %}
-<div data-role="page" id="indexpage" data-dom-cache="true" >
+<div data-role="page" id="alertspage" data-dom-cache="true" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		<p>No any notifications</p>
+		<a href="#" class="ui-btn" onclick="Toast.show('Hello World')" >Click Here</a>
 	</div>
 
-	{% include 'mobile/header.html' %}
+	{% include 'mobile/footer.html' %}
 </div>
 {% endblock %}

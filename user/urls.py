@@ -18,13 +18,20 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-	url(r'^login/$', views.login, name='login'),
-	url(r'^auth/$', views.auth1, name='auth1'),
-	url(r'^loggedin/$', views.loggedin, name='loggedin'),
-	url(r'^profile/$', views.profile, name='profile'),
-	url(r'^logout/$', views.logout, name='logout'),
-	url(r'^invalid/$', views.invalid, name='invalid'),
+	url(r'^signin/$', views.signin, name='signin'),
 	url(r'^signup/$', views.signup, name='signup'),
-	url(r'^register/$', views.register, name='register'),
-	url(r'^topics/add/$', views.add_topic, name='add_topic')
+	url(r'^signout/$', views.signout, name='signout'),
+	url(r'^signin/auth/$', views.auth1, name='auth1'),
+	url(r'^signup/register/$', views.register, name='register'),
+	url(r'^profile/$', views.profile, name='profile'),
+	url(r'^invalid/$', views.invalid, name='invalid'),
+	url(r'^post/add/$', views.post_add, name='post_add'),
+	url(r'^post/reaction/$', views.post_reaction, name='post_reaction'),
+	url(r'^post/comment/$', views.post_comment, name='post_comment'),
+	url(r'^post-comment/reaction/$', views.post_comment_reaction, name='post_comment_reaction'),
+	url(r'^reply/comment/$', views.reply_comment, name='reply_comment'),
+	url(r'^reply-comment/reaction', views.reply_comment_reaction, name='reply_comment_reaction'),
+	url(r'^load/post-comments/$', views.load_post_comments, name='load_post_comments'),
+	url(r'^load/reply-comments/$', views.load_reply_comments, name='load_reply_comments'),
+
 ]

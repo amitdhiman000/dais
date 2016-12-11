@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.core.mail import send_mail
 from django.utils.translation import ugettext as _
 import hashlib
+from pprint import pprint
 
 
 class User(models.Model):
@@ -38,7 +39,7 @@ class User(models.Model):
 
 class Guest:
 	def __init__(self):
-		self.email = ''
+		#self.email = ''
 		self.name = 'Guest'
 
 	def get_full_name(self):
@@ -102,7 +103,6 @@ class Topics(models.Model):
 	topic_name = models.CharField(max_length=50, blank=False)
 	topic_desc = models.CharField(max_length=100, blank=True)
 
-
 class Post(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
 	text = models.TextField()
@@ -130,8 +130,14 @@ class Article(Post):
 	title = models.CharField(max_length=100, blank=False)
 	sub_title = models.CharField(max_length=200, blank=False)
 
+	def get_title(self):
+		return self.title
+
+	def get_sub_title(self):
+		return self.sub_title
+
 	@classmethod
-	def create(self, request):
+	def create(klass, request):
 		post = request.POST
 		if post is None:
 			raise ValueError('post data can\'t be None')
@@ -140,7 +146,7 @@ class Article(Post):
 		if title is None or text is None:
 			raise ValueError('Values can\'t be None')
 
-		article = Article()
+		article = klass()
 		article.author = User.objects.get(email=request.user.email)
 		if article.author is None:
 			raise ValueError('user donsn\'t exist')
@@ -149,11 +155,145 @@ class Article(Post):
 		article.text = text
 		return article
 
-	def get_title(self):
-		return self.title
+	@classmethod
+	def get_article(klass, article_id):
+		try:
+			return klass.objects.get(id=article_id)
+		except:
+			ValueError('Not any article with this id')
 
-	def get_sub_title(self):
-		return self.sub_title
+	@classmethod
+	def get_user_articles(klass, user, start=0, count=10):
+		articles = klass.objects.order_by('-created_date')[start:count]
+		for art in articles:
+			tmp = ArticleReaction.objects.filter(article=art)
+			art.likes = tmp.filter(reaction=1).count()
+			art.dislikes = tmp.filter(reaction=-1).count()
+			art.reaction = 0
+			if user.is_loggedin():
+				try:
+					art.reaction = ArticleReaction.objects.get(article=art, user=user).reaction
+					print('reaction : '+str(art.reaction))
+				except:
+					pass
+		return articles
 
-class Comment(Post):
-	reply_to = models.ForeignKey('self', on_delete=models.CASCADE)
+
+class ArticleComment(Post):
+	article = models.ForeignKey(Article, on_delete=models.CASCADE)
+
+	@classmethod
+	def create(klass, article, user, text):
+		comment = klass(article=article, author=user, text=text)
+		comment.save()
+
+	@classmethod
+	def remove(klass, comment_id, user):
+		try:
+			comment = klass.objects.get(id=comment_id, author=user)
+			comment.delete()
+			return True
+		except:
+			return False
+
+	@classmethod
+	def get_comments(klass, article_id, start=0, count=10):
+		#try:
+		#comments = klass.objects.extra(select={'article_id':'article_id'}).filter(article=article_id).order_by('-created_date')[start:count].values('id', 'parent_id', 'author__email', 'text')
+		comments = klass.objects.filter(article=article_id).order_by('created_date')[start:count].values('id', 'article_id', 'author__email', 'text')
+		return comments
+		#except:
+		return None
+
+class ReplyComment(Post):
+	comment = models.ForeignKey('self', on_delete=models.CASCADE)
+
+	@classmethod
+	def create(klass, comment, user, text):
+		comment = klass(comment=comment, author=user, text=text)
+		comment.save()
+
+	@classmethod
+	def remove(klass, comment, user):
+		try:
+			comment = klass.objects.get(pk=comment.pk, author=user)
+			comment.delete()
+			return True
+		except:
+			return False
+
+
+class ArticleReaction(models.Model):
+	# {'condemn': -3, 'angry': -2, dislike': -1, 'like': 1, 'happy': 2, 'waov': 3, 'laugh': 4}
+	# default is like
+	article = models.ForeignKey(Article, on_delete=models.CASCADE, db_index=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	reaction = models.IntegerField(default=1)
+
+	@classmethod
+	def like(klass, user, article):
+		# prior check
+		article_object = klass.objects.get_or_create(user=user, article=article)[0]
+		if 1 != article_object.reaction:
+			article_object.reaction = 1
+			article_object.save()
+
+	@classmethod
+	def dislike(klass, user, article):
+		# prior check
+		article_object = klass.objects.get_or_create(user=user, article=article)[0]
+		if -1 != article_object.reaction:
+			article_object.reaction = -1
+			article_object.save()
+
+	@classmethod
+	def remove(klass, user, article):
+		# prior check
+		try:
+			instance = klass.objects.get(user=user, article=article)
+			instance.delete()
+		except:
+			print('comment doesnt exist');
+
+
+class CommentReaction(models.Model):
+	# {'condemn': -3, 'angry': -2, dislike': -1, 'like': 1, 'happy': 2, 'waov': 3, 'laugh': 4}
+	# default is like
+	comment = models.ForeignKey(ArticleComment, on_delete=models.CASCADE, db_index=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	reaction = models.IntegerField(default=1)
+
+	@classmethod
+	def like(klass, user, comment):
+		# prior check
+		comment_object = klass.objects.get_or_create(user=user, comment=comment)[0]
+		comment_object.reaction = 1
+		comment_object.save()
+
+	@classmethod
+	def dislike(klass, user, comment):
+		# prior check
+		comment_object = klass.objects.get_or_create(user=user, comment=comment)[0]
+		comment_object.reaction = -1
+		comment_object.save()
+
+class ReplyCommentReaction(models.Model):
+	# {'condemn': -3, 'angry': -2, dislike': -1, 'like': 1, 'happy': 2, 'waov': 3, 'laugh': 4}
+	# default is like
+	comment = models.ForeignKey(ReplyComment, on_delete=models.CASCADE, db_index=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	reaction = models.IntegerField(default=1)
+
+	@classmethod
+	def like(klass, user, comment):
+		# prior check
+		comment_object = klass.objects.get_or_create(user=user, comment=comment)[0]
+		comment_object.reaction = 1
+		comment_object.save()
+
+	@classmethod
+	def dislike(klass, user, comment):
+		# prior check
+		comment_object = klass.objects.get_or_create(user=user, comment=comment)[0]
+		comment_object.reaction = -1
+		comment_object.save()

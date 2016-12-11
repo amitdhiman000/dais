@@ -138,12 +138,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media_root')
 
 # some custom settings
-#
-#
-USER_LOGIN_URL = '/user/login/'
+# user pages
+USER_LOGIN_URL = '/user/signin/'
 USER_SIGNUP_URL = '/user/signup/'
-USER_LOGOUT_URL = '/user/logout/'
+USER_LOGOUT_URL = '/user/signout/'
 USER_SETTING_URL = '/user/settings/'
 USER_PROFILE_URL = '/user/profile/'
-
+# public pages
+HOME_PAGE_URL = '/'
+# error urls
 INVALID_REQUEST_URL = '/home/invalid-request'

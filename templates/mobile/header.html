@@ -1,43 +1,27 @@
 {% load staticfiles %}
 <style>
-#website_info { width:13%; float:left; }
-#website_info img { width: 48px; height: 48px; }
-#search_box { width:83%; float:left; }
-#search {  }
-.toast {
-	display: none;
-	min-width: 30%;
-	height:auto;
-	position:absolute;
-	left:50%;
-	margin-left:-100px;
-	bottom:10%;
-	background-color: #383838;
-	color: #F0F0F0;
-	font-family: Calibri;
-	font-size: 15px;
-	padding:10px;
-	text-align:center;
-	border-radius: 2px;
-	-webkit-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
-	-moz-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
-	box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
-}
+#website-info { width:13%; float: left; }
+#website-info img { /* width: 48px; height: 48px; */ }
+#search-box { float: left; }
+#header-top .ui-content { padding: 0.2em; }
+#search-results { position: absolute; width: 80%; z-index:5000; margin-top: -8px; display: none; }
 </style>
-<script type="text/javascript" >
-	gActiveTab = 1;
-</script>
 
 <div data-role="header" data-position="fixed" data-tap-toggle="false" >
-	<div id="header_top">
-		<div id="website_info">
+	<div id="header-top" class="ui-content"  >
+		<div id="website-info" class="ui-content" >
 			<!-- website logo -->
-			<img src="{% static 'images/daislogo.jpg' %}" />
+			<a href="/" data-ajax="false" style="display: block;">
+			<img src="{% static 'images/d-logo-b.png' %}" />
+			</a>
 		</div>
-		<div id="searchbox" data-role="main" class="ui-content" style="padding: 0em 0.7em;" >
-			<form method="post" action="javascript:doSearch()">
-				<input type="search" name="search" id="search" value="" placeholder="Search here..." >
+		<div id="search-box" data-role="main" class="ui-content" style="padding: 0em 0.5em;" >
+			<form method="post" action="javascript:doSearch()" id="search-form" >
+				<input data-type="search" name="search" id="search" value="" placeholder="Search here..." autocomplete="off" >
 			</form>
+			<ul data-role="listview" data-filter="true" data-inset="true" data-input="#search" id="search-results" >
+			    <li data-filtertext="main page:home page"><a href="#">Home</a></li>
+			</ul>
 		</div>
 	</div>
 	<div data-role="navbar" data-iconpos="left" >
@@ -60,7 +44,7 @@
 			class="ui-btn-active ui-state-persist"
 			{% endif %} >{{ user.name }}</a></li>
 			{% else %}
-			<li><a href="/user/login/" data-transition="none" data-icon="user"
+			<li><a href="/user/signin/" data-transition="none" data-icon="user"
 			{% if page == 'user' %}
 			class="ui-btn-active ui-state-persist"
 			{% endif %} > SignIn </a></li>
@@ -68,5 +52,14 @@
 		</ul>
 	</div>
 </div>
-<div class="toast" >
+<div class="toast" style="display: none;" >
+</div>
+<div class="user-comments-wid" id="user-comments-wid" style="display: none;" dias-name="comment-wid" >
+	<div class="user-comments">
+	</div>
+	<form action="/user/post/comment/" method="POST" data-ajax="false" >
+		<input type="hidden" name="article_id" id="article_id" />
+		<input type="text" name="comment" data-inline="true" />
+		<input type="submit" name="submit" value="Post" data-mini="true" data-inline="true" data-icon="check" class="user-comment-submit" />
+	</form>
 </div>

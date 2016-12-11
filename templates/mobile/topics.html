@@ -8,15 +8,14 @@
 <div data-role="page" id="topicsaddpage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
-		<p>Current Topics</p>
-		<form action="/user/topics/add/" method="POST" >
+		<form action="/user/post/add/" method="POST" >
 			{% csrf_token %}
 			Title : <input type="text" name="title" id="title" />
-			Abstract : <textarea name="text" id="text" style="resize: none;" ></textarea>
+			Abstract : <textarea name="text" id="text" style="max-height:3em; resize: none; scroll-behavior: all;"></textarea>
 			<input type="submit" name="submit" class="submit" value="Submit" />
 		</form>
 	</div>
 
-	{% include 'mobile/header.html' %}
+	{% include 'mobile/footer.html' %}
 </div>
 {% endblock %}

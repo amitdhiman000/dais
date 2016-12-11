@@ -1,14 +1,46 @@
 {% extends 'mobile/base.html' %}
 
 {% block content %}
-<div data-role="page" id="indexpage" data-dom-cache="true" >
+<div data-role="page" id="profilepage" data-dom-cache="false" >
+	<style>
+	.ui-bar-c { border: 1px solid #DDD; padding: 0.6em 0.8em; background: #E9E9E9; }
+	</style>
+
 	{% include 'mobile/header.html' %}
-	<a href="/user/logout/" class="ui-button" data-ajax="false" >Logout</a>
+	<div data-role="controlgroup" data-type="horizontal">
+		<a href="/user/signout/" data-mini="true" data-role="button" data-icon="info" data-ajax="false" data-iconpos="notext" data-theme="c" >User Info</a>
+		<a href="/user/mails/" data-mini="true" data-role="button" data-icon="heart" data-ajax="false" data-iconpos="notext" data-theme="c" >Topics</a>
+		<a href="/user/mails/" data-mini="true" data-role="button" data-icon="mail" data-ajax="false" data-iconpos="notext" data-theme="c" >Mail</a>
+		<a href="/user/signout/" data-mini="true" data-role="button" data-icon="bars" data-ajax="false" data-iconpos="notext" data-theme="c">Stats</a>
+		<a href="/user/settings/" data-mini="true" data-role="button" data-icon="gear" data-ajax="false" data-iconpos="notext" data-theme="c" >Settings</a>
+		<a href="/user/signout/" data-mini="true" data-role="button" data-icon="power" data-ajax="false" data-iconpos="notext" data-theme="c">SignOut</a>
+	</div>
 	<div data-role="main" class="ui-content">
-		<h4> welcome {{user.name}} !!</h4>
-		<h3>Account Details :</h3>
-		<p>Email : {{user.email}}</p>
-		<p>Level : {{user.level}}</p>
+		<div class="ui-bar ui-bar-c" >
+			<b>Account details </b>
+		</div>
+		<table data-role="table" id="my-table" data-mode="reflow">
+	      <thead>
+	        <tr>
+	          <th>Name</th>
+	          <th>Email</th>
+	          <th>Phone</th>
+	          <th>Level</th>
+	          <th>Status</th>
+	          <th>Registered on</th>
+	        </tr>
+	      </thead>
+	      <tbody>
+	        <tr>
+	          <td><b>{{user.name}}</b></td>
+	          <td>{{user.email}}</td>
+	          <td>{{user.phone}}</td>
+	          <td>{{user.level}}</td>
+	          <td>{{user.status}}</td>
+	          <td>{{user.created}}</td>
+	        </tr>
+	      </tbody>
+	    </table>
 	</div>
 	{% include 'mobile/footer.html' %}
 </div>

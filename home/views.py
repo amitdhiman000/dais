@@ -9,8 +9,7 @@ def index(request):
 	template = device.get_template(request, 'home.html')
 	data = {'title':'Home', 'page':'home'}
 
-	#articles = Article.objects.get_all()
-	articles = Article.objects.order_by('-created_date')
+	articles = Article.get_user_articles(request.user)
 
 	data.update({'articles': articles})
 

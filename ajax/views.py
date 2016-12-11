@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
+'''
 def search(request):
-
 	key = "polls"
 	items = ['bengaluru traffic problem', 'vijag city development',
 	 'delhi polution and development' ,'election treds in punjab' ,
@@ -18,3 +19,19 @@ def search(request):
 	print(html)
 
 	return HttpResponse(html)
+'''
+
+@csrf_exempt
+def search(request):
+	key = "polls"
+	items = {'text': ['bengaluru traffic problem',
+			'vijag city development',
+			'delhi polution and development',
+			'election treds in punjab',
+			'latest on goa polls']}
+
+	##
+	## debug
+	print(items)
+
+	return JsonResponse(items)

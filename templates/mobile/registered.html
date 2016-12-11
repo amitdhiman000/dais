@@ -1,16 +1,15 @@
 {% extends 'mobile/base.html' %}
 
-
 {% block content %}
-<div class="content">
-	<div class="content_title">
+<div data-role="page" id="profilepage" data-dom-cache="false" >
+	{% include 'mobile/header.html' %}
+	<div class="ui-content">
 		<h3>SuccessFully Registered!!</h3>
-	</div>
-	<div class="content_body">
 		<p>Please check your email to activate the account</p>
 		<a href="mailto:{{user.email}}" >go to your mail</a>
-		|
 		<a href="/" >go to home page</a>
+		</div>
 	</div>
+	{% include 'mobile/footer.html' %}
 </div>
 {% endblock %}

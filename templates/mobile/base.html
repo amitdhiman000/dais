@@ -9,22 +9,14 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
 		<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.mobile-1.4.5.min.css' %}" />
-		<script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}" >
-		</script>
-		<script type="text/javascript">
-			$(document).bind("mobileinit", function() {
-				//$.mobile.page.prototype.options.keepNative = "select, input, button";
-			});
-		</script>
-		<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.5.min.js' %}" >
-		</script>
-		<script type="text/javascript" src="{% static 'js/app.js' %}" >
-		</script>
+		<link rel="stylesheet" type="text/css" href="{% static 'css/app-widgets.css' %}" />
+		<script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}" ></script>
+		<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.5.min.js' %}" ></script>
+		<script type="text/javascript" src="{% static 'js/app.js' %}" ></script>
+		<script type="text/javascript" src="{% static 'js/app-widgets.js' %}" ></script>
+
 		<script type="text/javascript">
 			$(document).ready(function() {
-				/* search box*/
-				$("#search").on('keyup', function(event) { searchKey($(this).val()); });
-
 				$("body").on("swipeleft",function(event) {
 					if(event.handled !== true) { // This will prevent event triggering more then once
 						var nextpage = $.mobile.activePage.next('[data-role="page"]');
@@ -52,7 +44,20 @@
 		<!-- scripts -->
 		{% block script %}
 		{% endblock %}
-
+		<style type="text/css">
+			.toast { display: none; min-width: 30%;	height: auto; position:absolute; left:50%; margin-left:-25%; bottom:10%; background-color: #383838; color: #F0F0F0; font-family: Calibri; 	font-size: 1.0em; padding:0.9em; text-align:center;
+				border-radius: 2px;
+				-webkit-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+				-moz-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+				box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+			}
+			.h-bar-dotted { border-bottom: 1px dotted #ccc; height: 1px; }
+			.h-bar-solid { border-bottom: 1px solid #ccc; height: 1px; }
+			.ui-page { background: #ffeeee; color: #555;  }
+			.ui-content { padding: 0.1em; }
+			.dais-ui-content .ui-content, .dais-ui-content { padding: 0.4em; }
+			.form_table tr td:first-child { text-align: right; }
+		</style>
 		<!-- styles -->
 		{% block style %}
 		{% endblock %}

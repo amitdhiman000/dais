@@ -39,13 +39,8 @@ class UserRegControl(BaseControl):
 		self.m_user = User()
 		self.m_user.name = post.get('name', '').strip(' \t\n\r')
 		self.m_user.email = post.get('email', '').strip(' \t\n\r')
-		pass1 = post.get('pass1', '').strip(' \t\n\r')
-		pass2 = post.get('pass2', '').strip(' \t\n\r')
-		self.m_user.password = pass1
-		if pass1 != pass2:
-			self.m_valid = False
-			self.m_errors['pass2'] = '*Passwords do not match!'
-
+		self.m_user.password = post.get('pass', '').strip(' \t\n\r')
+		self.m_user.phone = post.get('phone', '').strip(' \t\n\r')
 
 		# keep a copy of older values
 		self.m_values['name'] = self.m_user.name
@@ -91,15 +86,27 @@ class UserRegControl(BaseControl):
 		# check for password
 		if self.m_user.password is None or self.m_user.password == '':
 			valid = False
-			self.m_errors['pass1'] = '*password can\'t be empty'
+			self.m_errors['pass'] = '*password can\'t be empty'
 		else:
 			length = len(self.m_user.password)
+			'''
 			if length > 20:
 				valid = False
-				self.m_errors['pass1'] = '*password is too long'
+				self.m_errors['pass'] = '*password is too long'
 			elif length < 3:
 				valid = False
-				self.m_errors['pass1'] = '*Password is too short'
+				self.m_errors['pass'] = '*Password is too short'
+			'''
+
+		# check for phone
+		if self.m_user.phone is None or self.m_user.phone == '':
+			valid = False
+			self.m_errors['pass'] = '*phone can\'t be empty'
+		else:
+			length = len(self.m_user.phone)
+			if length != 10:
+				valid = False
+				self.m_errors['pass'] = '*phone should be 10 digits long'
 
 		self.m_valid = valid
 		return valid
