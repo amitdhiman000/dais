@@ -14,15 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.contrib import admin
 from . import views
 
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-    url(r'^topics/$', views.load_topics, name='load_topics'),
-    url(r'^polls/$', views.load_polls, name='load_polls'),
-    url(r'^petitions/$', views.load_petitions, name='load_petitions'),
-    url(r'^topic/new/$', views.new_topic, name='new_topic'),
-    url(r'^topic/create/$', views.create_topic, name='create_topic'),
-#   url(r'^topics/(?P<name>\w+)/$', views.topic_add, name='topic_add'),
-    url(r'^alerts/$', views.alerts, name='alerts'),
+    url(r'^home$', views.index, name='index'),
+    url(r'^topics-view/$', views.topics_view, name='topics_view'),
+	url(r'^topic-create/$', views.topic_create, name='topic_create'),
+    url(r'^topic-edit/$', views.topic_edit, name='topic_edit'),
+    url(r'^topic-delete/$', views.topic_delete, name='topic_delete'),
+
+    #url(r'^polls/view$', views.view_polls, name='view_polls'),
+    #url(r'^poll/create$', views.create_poll, name='create_poll'),
+    #url(r'^poll/edit/$', views.edit_poll, name='edit_poll'),
+    #url(r'^poll/edit/$', views.edit_poll, name='edit_poll'),
 ]

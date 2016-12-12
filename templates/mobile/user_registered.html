@@ -4,10 +4,11 @@
 <div data-role="page" id="profilepage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	<div class="ui-content">
-		<h3>SuccessFully Registered!!</h3>
+		<h3>Successfully Registered!!</h3>
 		<p>Please check your email to activate the account</p>
-		<a href="mailto:{{user.email}}" >go to your mail</a>
-		<a href="/" >go to home page</a>
+		<p>Welcome <strong>{{user.name}}</strong></p>
+		<a href="/" data-role="button" data-icon="home" data-mini="true" data-inline="true" >Home</a>
+		<a href="mailto:{{user.email}}" data-icon="mail" data-role="button" data-mini="true" data-inline="true" >Mail</a>
 		</div>
 	</div>
 	{% include 'mobile/footer.html' %}

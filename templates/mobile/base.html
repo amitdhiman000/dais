@@ -16,6 +16,9 @@
 		<script type="text/javascript" src="{% static 'js/app-widgets.js' %}" ></script>
 
 		<script type="text/javascript">
+			$(document).on("mobileinit", function() {
+				$.mobile.ignoreContentEnabled = true;
+			});
 			$(document).ready(function() {
 				$("body").on("swipeleft",function(event) {
 					if(event.handled !== true) { // This will prevent event triggering more then once
@@ -57,6 +60,10 @@
 			.ui-content { padding: 0.1em; }
 			.dais-ui-content .ui-content, .dais-ui-content { padding: 0.4em; }
 			.form_table tr td:first-child { text-align: right; }
+			.ui-bar-c { border: 1px solid #DDD; padding: 0.6em 0.8em; background: #E9E9E9; }
+			.dias-float-div { margin-top: 0.5em; padding: 0.2em; border: 1px solid #CCC; box-shadow: 0px 4px 8px #777;background: #FFF; }
+			.dias-float-div:before, .article-div:after { position: absolute; content: ""; transform: rotate(3deg); }
+			.dias-float-div:after { transform: rotate(-3deg); }
 		</style>
 		<!-- styles -->
 		{% block style %}

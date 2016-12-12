@@ -10,7 +10,7 @@ import json
 from device import get_template
 from common import redirect_if_loggedin, login_required, __redirect
 ## custom authentication
-from .models import User, Article, ArticleReaction, ArticleComment
+from .models import User, Article, ArticleReaction, ArticleComment, Topic
 from .control import UserRegControl
 from . import backends as auth
 
@@ -20,7 +20,7 @@ from pprint import pprint
 # Create your views here.
 
 @redirect_if_loggedin
-def signin(request):
+def signin_view(request):
 	data = {'title':'Login', 'page':'user'}
 	if 'form_errors' in request.session:
 		data['form_errors'] = request.session['form_errors']
@@ -29,11 +29,11 @@ def signin(request):
 		del request.session['form_values']
 
 	data.update(csrf(request))
-	file = get_template(request, 'signin.html')
+	file = get_template(request, 'user_signin.html')
 	return render(request, file, data)
 
 #functions for registration
-def signup(request):
+def signup_view(request):
 	data = {'title':'Signup', 'page':'user'}
 	data.update(csrf(request))
 	if 'form_errors' in request.session:
@@ -42,7 +42,7 @@ def signup(request):
 		del request.session['form_errors']
 		del request.session['form_values']
 
-	file = get_template(request, 'signup.html')
+	file = get_template(request, 'user_signup.html')
 	return render(request, file, data)
 
 def signout(request):
@@ -50,7 +50,7 @@ def signout(request):
 	return __redirect(request, settings.USER_LOGIN_URL)
 
 
-def auth1(request):
+def signin_auth(request):
 	pprint(request.POST)
 	if request.method == 'POST':
 		username = request.POST.get('email', '')
@@ -63,24 +63,28 @@ def auth1(request):
 			#request.session.set_expiry(10)
 			return __redirect(request, settings.USER_PROFILE_URL)
 		else:
-			form_errors = {'user':'*Username or password is wrong!!'}
+			form_errors = {'user':'*Email or password is wrong!!'}
 			form_values = {'user':request.POST.get('user', '')}
 			request.session['form_errors'] = form_errors
 			request.session['form_values'] = form_values
 			return __redirect(request, settings.USER_LOGIN_URL)
-		return HttpResponse('Invalid request!!')
+		return __redirect(request, settings.INVALID_REQUEST_URL)
 
-def register(request):
-	data = {'title':'Registration Successful', 'page':'user'}
+def signup_register(request):
+	data = {'title':'SignUp Successful', 'page':'user'}
 	if request.method == 'POST':
 		control = None
 		control = UserRegControl(request.POST)
 		if control is not None:
 			if control.validate():
-				control.register()
+				user = control.register()
 				print('registration successful')
-				file = get_template(request, 'registered.html')
-				return render(request, file, data)
+				auth.login(request, user)
+				if request.is_ajax():
+					return __redirect(request, settings.USER_SIGNUP_SUCCESS_URL)
+				else:
+					file = get_template(request, 'user_registered.html')
+					return render(request, file, data)
 			else:
 				pprint(control.get_errors());
 				request.session['form_errors'] = control.get_errors()
@@ -90,18 +94,59 @@ def register(request):
 
 
 @login_required
-def profile(request):
-	print('request for profile')
+def signup_success_view(request):
+	print('registration success')
+	data = {'title':'Signup :: Success', 'page':'user'}
+	file = get_template(request, 'user_registered.html');
+	return render(request, file, data)
+
+@login_required
+def profile_view(request):
+	print('profile')
 	data = {'title':'Profile', 'page':'user'}
-	file = get_template(request, 'profile.html');
+	file = get_template(request, 'user_profile.html');
 	return render(request, file, data)
 
 
-def invalid(request):
+def invalid_view(request):
 	data = {'title': 'Invalid'};
 #	return HttpResponse ('This is Invalid Request')
-	file = get_template(request, 'profile.html')
+	file = get_template(request, 'invalid.html')
 	return render(request, file, data)
+
+
+##
+## User personal and profile info
+##
+
+def user_info_view(request):
+	return profile_view(request);
+
+def user_topics_select_view(request):
+	data = {'title': 'Follow Topics', 'page':'user'};
+	topics = Topic.get_topics(request.user)
+	data.update({'topics':topics})
+	file = get_template(request, 'user_topics_select.html')
+	return render(request, file, data)
+
+def user_topic_selected(request):
+	pass
+
+def user_mails_view(request):
+	data = {'title': 'User mails', 'page':'user'};
+	file = get_template(request, 'user_mails.html')
+	return render(request, file, data)
+
+def user_stats_view(request):
+	data = {'title': 'User stats', 'page':'user'};
+	file = get_template(request, 'user_stats.html')
+	return render(request, file, data)
+
+def user_settings_view(request):
+	data = {'title': 'User settings', 'page':'user'};
+	file = get_template(request, 'user_settings.html')
+	return render(request, file, data)
+
 
 ##
 ## User topic add functionality
@@ -110,9 +155,10 @@ def invalid(request):
 @login_required
 def post_add(request):
 	pprint(request.POST)
+	title = request.POST.get('title', None)
+	text = request.POST.get('text', None)
 	try:
-		article = Article.create(request)
-		article.save()
+		article = Article.create(request.user, title, text)
 	except ValueError as e:
 		print('ValueError : '+ str(e))
 	except:

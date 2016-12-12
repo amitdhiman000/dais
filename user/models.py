@@ -99,9 +99,30 @@ class Address(models.Model):
 	fk_area_id = models.ForeignKey(Area, on_delete=models.CASCADE)
 
 
-class Topics(models.Model):
+class Topic(models.Model):
 	topic_name = models.CharField(max_length=50, blank=False)
 	topic_desc = models.CharField(max_length=100, blank=True)
+	topic_followers = models.IntegerField(default=0)
+
+	@classmethod
+	def get_topics(klass, user):
+		topics = klass.objects.order_by('-topic_followers')
+		if topics != None:
+			for topic in topics:
+				#tmp = TopicFollower.objects.filter(user=user).order_by('topic__topic_followers')
+				if TopicFollower.objects.filter(topic=topic, user=user).exist():
+					topic.followed = 1
+				else:
+					topic.followed = 0
+		return topics
+
+class TopicFollower(models.Model):
+	topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+
+	@classmethod
+	def add_follower(klass, user, topic):
+		pass
 
 class Post(models.Model):
 	author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -137,22 +158,15 @@ class Article(Post):
 		return self.sub_title
 
 	@classmethod
-	def create(klass, request):
-		post = request.POST
-		if post is None:
-			raise ValueError('post data can\'t be None')
-		title = post.get('title', None)
-		text = post.get('text', None)
-		if title is None or text is None:
-			raise ValueError('Values can\'t be None')
-
+	def create(klass, user, title, text):
 		article = klass()
-		article.author = User.objects.get(email=request.user.email)
+		article.author = User.objects.get(email=user.email)
 		if article.author is None:
 			raise ValueError('user donsn\'t exist')
 
 		article.title = title
 		article.text = text
+		article.save()
 		return article
 
 	@classmethod

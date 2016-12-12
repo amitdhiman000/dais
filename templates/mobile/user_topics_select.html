@@ -5,17 +5,19 @@
 
 
 {% block content %}
-<div data-role="page" id="alertspage" data-dom-cache="true" >
+<div data-role="page" id="topicspage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
-
+	{% include 'mobile/user_profile_nav.html' %}
 	<div data-role="main" class="ui-content">
 		<div class="ui-corner-all custom-corners">
+			<!--<div class="ui-bar ui-bar-c" >-->
 			<div class="ui-bar ui-bar-a">
-				<b>Alerts </b>
+				<strong>Subscibe Topics <strong>
 			</div>
 	  		<div class="ui-body ui-body-a">
-	  			<p>No any notifications</p>
-	  			<a href="#" class="ui-btn" data-mini="true" onclick="Toast.show('Hello World')" >Refresh</a>
+	  			{% for topic in topics %}
+	  				<div class="ui-content"> {{topic.title}} </div>
+	  			{% endfor %}
 	  		</div>
 		</div>
 	</div>
