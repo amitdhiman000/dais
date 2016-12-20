@@ -1,42 +1,20 @@
 {% extends 'mobile/base.html' %}
 
 {% block content %}
-<div data-role="page" id="adminindexpage" name="adminindexpage" data-dom-cache="false" >
+<div data-role="page" id="adminindexpage" data-dom-cache="false" >
 	<style>
 		.topic-item { float: left; padding: 0.5em 0.9em; border-radius: 4px; margin: 5px; }
 		.topic-item-f { background: #38C; color: #FFF; border: 1px solid #38C; }
 		.topic-item-uf { background: #F9F9F9; color: #333; border: 1px solid #DDD; }
 	</style>
-	<script type="text/javascript" >
-		function createTopic(e, pThis)
-		{
-			e.preventDefault();
-			console.log("+createTopic");
-			var form = pThis.parents('form');
-			var action = form.attr('action');
-			var name = form.find("input[name='topic_name']").val();
-			$('#new_topic').delay(1200).popup('close');
-			//setTimeout(function(){ $('#new_topic').popup('close');},1); });
-			postRequest(action, form.serialize(), (status, result) => {
-				if (status === true) {
-					Toast.show(result.message);
-					$('#topics-box').append('<div class="topic-item topic-item-uf" >'+ name +'</div>');
-				} else {
-					console.log('error : '+result.error);
-				}
-			});
-		}
-	</script>
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content dais-ui-content">
 		<div class="ui-bar ui-bar-a ui-corner-all" style="margin-top: 5px;">
 			<strong>Topics <strong>
 		</div>
-		<form style="display:none" id="topic-select-form" action="/user/topic-selected/" method="POST" >
-			{% csrf_token %}
-		</form>
-  		<div class="ui-body ui-body-a ui-corner-all" id="topics-box" >
+  		<div class="ui-body ui-body-a ui-corner-all">
   			{% for topic in topics %}
+  				<div class="topic-item topic-item-f" > {{topic.name}} </div>
   				<div class="topic-item topic-item-uf" > {{topic.name}} </div>
   			{% endfor %}
   		</div>
@@ -57,9 +35,9 @@
 					</div>
 			  		<div class="ui-body ui-body-a">
 			  			{% csrf_token %}
-			            <input type="text" name="topic_name" id="topic_name" value="" placeholder="Title" data-theme="a">
+			            <input type="text" name="topic_name" value="" placeholder="Title" data-theme="a">
 			            <input type="text" name="topic_desc" value="" placeholder="Description" data-theme="a">
-			            <button type="submit" id="submit-topic" class="ui-btn ui-corner-all ui-btn-icon-left ui-icon-check" onclick="createTopic(event, $(this))">Add</button>
+			            <button type="submit" class="submit ui-btn ui-corner-all ui-btn-icon-left ui-icon-check" onclick="(function() { console.log('close popup'); setTimeout(function(){ $('#new_topic').popup('close');},1); })()">Add</button>
 					</div>
 				</div>
 	        </div>

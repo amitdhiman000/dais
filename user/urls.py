@@ -33,13 +33,4 @@ urlpatterns = [
 	url(r'^mails/$', views.user_mails_view, name='user_mails_view'),
 	url(r'^stats/$', views.user_stats_view, name='user_stats_view'),
 	url(r'^settings/$', views.user_settings_view, name='user_settings_view'),
-	## other mappings
-	url(r'^post-create/$', views.post_add, name='post_add'),
-	url(r'^post-reaction/$', views.post_reaction, name='post_reaction'),
-	url(r'^post-comment/$', views.post_comment, name='post_comment'),
-	url(r'^post-comment-reaction/$', views.post_comment_reaction, name='post_comment_reaction'),
-	url(r'^reply-comment/$', views.reply_comment, name='reply_comment'),
-	url(r'^reply-comment-reaction/$', views.reply_comment_reaction, name='reply_comment_reaction'),
-	url(r'^load-post-comments/$', views.load_post_comments, name='load_post_comments'),
-	url(r'^load-reply-comments/$', views.load_reply_comments, name='load_reply_comments'),
 ]

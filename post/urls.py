@@ -17,13 +17,12 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r'^$', views.index, name='index'),
-#   url(r'^topics/(?P<name>\w+)/$', views.topic_add, name='topic_add'),
-	url(r'^topics/$', views.topics_view, name='topics_view'),
-	url(r'^alerts/$', views.alerts_view, name='alerts_view'),
-	url(r'^invalid-request/$', views.invalid_view, name='invalid_view'),
-	url(r'^polls/$', views.polls_view, name='polls_view'),
-	url(r'^petitions/$', views.petitions_view, name='petitions_view'),
-	url(r'^topic/new/$', views.new_topic_view, name='new_topic_view'),
-	url(r'^topic/create/$', views.create_topic, name='create_topic'),
+	url(r'^post-create/$', views.post_add, name='post_add'),
+	url(r'^post-reaction/$', views.post_reaction, name='post_reaction'),
+	url(r'^post-comment/$', views.post_comment, name='post_comment'),
+	url(r'^post-comment-reaction/$', views.post_comment_reaction, name='post_comment_reaction'),
+	url(r'^reply-comment/$', views.reply_comment, name='reply_comment'),
+	url(r'^reply-comment-reaction/$', views.reply_comment_reaction, name='reply_comment_reaction'),
+	url(r'^load-post-comments/$', views.load_post_comments, name='load_post_comments'),
+	url(r'^load-reply-comments/$', views.load_reply_comments, name='load_reply_comments'),
 ]

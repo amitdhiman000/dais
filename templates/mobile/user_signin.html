@@ -12,14 +12,14 @@
 {% endblock %}
 
 {% block content %}
-<div data-role="page" id="signinpage" data-dom-cache="false" >
+<div data-role="page" data-url="/user/signin/" id="signinpage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	<div data-role="main" class="ui-content">
 		<br />
 		<div data-role="switchtab" >
 			<div class="switchtab-items">
-				<a href="/user/signin/" rel="#tab-signin" data-prefetch="true" class="activeswitchtab" >SignIn</a>
-				<a href="/user/signup/" rel="#tab-signup" data-prefetch="true" >SignUp</a>
+				<a href="/user/signin/" rel="#tab-signin" class="activeswitchtab" >SignIn</a>
+				<a href="/user/signup/" rel="#tab-signup" >SignUp</a>
 			</div>
 			<div class="switchtab-content" id="tab-signin">
 				<div class="ui-content" >

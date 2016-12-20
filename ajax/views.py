@@ -24,9 +24,9 @@ def search(request):
 @csrf_exempt
 def search(request):
 	key = "polls"
-	items = {'text': ['bengaluru traffic problem',
+	items = {'status':200, 'text': ['bengaluru traffic problem',
 			'vijag city development',
-			'delhi polution and development',
+			'delhi pollution',
 			'election treds in punjab',
 			'latest on goa polls']}
 

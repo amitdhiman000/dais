@@ -8,20 +8,29 @@
 <div data-role="page" id="topicspage" data-dom-cache="false" >
 	{% include 'mobile/header.html' %}
 	{% include 'mobile/user_profile_nav.html' %}
-	<div data-role="main" class="ui-content">
-		<div class="ui-corner-all custom-corners">
-			<!--<div class="ui-bar ui-bar-c" >-->
-			<div class="ui-bar ui-bar-a">
-				<strong>Subscibe Topics <strong>
-			</div>
-	  		<div class="ui-body ui-body-a">
-	  			{% for topic in topics %}
-	  				<div class="ui-content"> {{topic.title}} </div>
-	  			{% endfor %}
-	  		</div>
-		</div>
-	</div>
 
+	<style>
+		.topic-item { float: left; padding: 0.5em 0.9em; border-radius: 4px; margin: 5px; }
+		.topic-item-f { background: #38C; color: #FFF; border: 1px solid #38C; }
+		.topic-item-uf { background: #F9F9F9; color: #333; border: 1px solid #DDD; }
+	</style>
+	<div data-role="main" class="ui-content dais-ui-content">
+		<div class="ui-bar ui-bar-a ui-corner-all" style="margin-top: 5px;">
+			<strong>Topics <strong>
+		</div>
+		<form style="display:none" id="topic-select-form" action="/user/topic-selected/" method="POST" >
+			{% csrf_token %}
+		</form>
+  		<div class="ui-body ui-body-a ui-corner-all">
+  			{% for topic in topics %}
+  				{% if topic.followed == 0 %}
+  				<div class="topic-item topic-item-uf" data-tid="{{topic.id}}" data-tf="0" onclick="followTopic($(this))"> {{topic.name}} </div>
+  				{% else %}
+  				<div class="topic-item topic-item-f" data-tid="{{topic.id}}" data-tf="1" onclick="followTopic($(this))"> {{topic.name}} </div>
+  				{% endif %}
+  			{% endfor %}
+  		</div>
+	</div>
 	{% include 'mobile/footer.html' %}
 </div>
 {% endblock %}

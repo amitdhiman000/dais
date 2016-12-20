@@ -3,9 +3,8 @@ from .models import User
 
 class BaseControl(object):
 
-	def __init__(self):
-		pass
-		# do nothing
+	def parseRequest(post):
+		return True
 
 	def get_errors(self):
 		return self.m_errors
@@ -24,15 +23,11 @@ class BaseControl(object):
 
 	def register(self):
 		# do nothing
-		return True
+		return None
 
 
 class UserRegControl(BaseControl):
-	
-	def __init__(self, post=None):
-		if post is None:
-			raise ValueError("post data is None")
-
+	def parseRequest(self, post):
 		self.m_valid = True
 		self.m_errors = {}
 		self.m_values = {}
@@ -45,6 +40,8 @@ class UserRegControl(BaseControl):
 		# keep a copy of older values
 		self.m_values['name'] = self.m_user.name
 		self.m_values['email'] = self.m_user.email
+		self.m_values['phone'] = self.m_user.phone
+		return True
 
 	def clean(self):
 		pass
@@ -112,5 +109,4 @@ class UserRegControl(BaseControl):
 		return valid
 
 	def register(self):
-		self.m_user.add_user()
-		return self.m_user
+		return User.create(self.m_user)

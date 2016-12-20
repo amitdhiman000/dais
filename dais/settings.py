@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'daisadmin',
     'home',
     'user',
+    'post',
+    'politics',
 ]
 
 MIDDLEWARE_CLASSES = [

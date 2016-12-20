@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^home$', views.index, name='index'),
     url(r'^topics-view/$', views.topics_view, name='topics_view'),
 	url(r'^topic-create/$', views.topic_create, name='topic_create'),
-    url(r'^topic-edit/$', views.topic_edit, name='topic_edit'),
+    url(r'^topic-update/$', views.topic_update, name='topic_update'),
     url(r'^topic-delete/$', views.topic_delete, name='topic_delete'),
 
     #url(r'^polls/view$', views.view_polls, name='view_polls'),

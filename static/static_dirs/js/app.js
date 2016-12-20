@@ -1,170 +1,142 @@
-$(document).on('pagecontainerbeforeshow', function() {
-	console.log('enhance the page');
-	//$(this).enhanceWithin();
-});
+$(document).on('pagecreate', (e) => {
+	console.log('+pagecreate');
 
-
-$(document).on('pageinit', function() {
 	/********* Unregister all callbacks **********/
-	$(document).off('keyup', '#search');
-	$(document).off('click', '.user-reaction');
-	$(document).off('click', '.user-comment-link');
-	$(document).off('click', '.user-comment-submit');
+	$(document).off('keyup', '.search');
 	$(document).off('click', '.submit');
 
 	/********** Register the callbacks ***********/
-	$(document).on('keyup', '#search', doSearch);
-	$(document).on('click', '.user-reaction', userReaction);
-	$(document).on('click', '.user-comment-link', userComment);
-	$(document).on('click', '.user-comment-submit', userCommentSubmit);
-	$(document).on('click', '.submit', function(e) {
-		e.preventDefault();
-		/*
-		if(0 === $('#title').val().length || 0 === $('#text').val().length){
-			show_toast('Please fill the credentials');
-			return;
-		}
-		*/
-
-		var form = $(this).parents('form');
-		var formAction = form.attr('action');
-		console.log('action : '+ formAction);
-		$.ajax({url: formAction,
-			data: form.serialize(),
-			type: 'POST',
-			async: 'true',
-			dataType: 'text', // xml, html, json, jsonp, text //
-			beforeSend: function(xhr) {
-				console.log('beforeSend');
-				$.mobile.loading('show');
-			},
-			complete: function(response) {
-				// This function is called at last for cleanup
-				console.log('comeplete :'+ response.status);
-				$.mobile.loading('hide');
-			},
-			success: function (data, status, xhr) {
-				mimeType = xhr.getResponseHeader("content-type");
-				if (mimeType.indexOf('json') > -1) {
-					console.log('success : ' + data);
-					jsonData = jQuery.parseJSON(data);
-					switch(jsonData.status) {
-					case 302:
-						console.log('redirecting');
-						location.href = jsonData.url;
-						break;
-					case 200:
-						//console.log(jsonData.message);
-						Toast.show(jsonData.message);
-						break;
-					case 204:
-						Toast.show(jsonData.message);
-						Toast.show('Done');
-						break;
-					default:
-						console.log(jsonData.message);
-						Toast.show(jsonData.message);
-						break;
-					}
-				} else if (mimeType.indexOf('html') > -1) {
-					// handle html data
-				}
-			},
-			error: function (xhr,error) {
-				console.log('error : '+ error + ', status : '+xhr.status);
-				Toast.show('Network Error occured');
-			}
-		});
-	});
+	$(document).on('keyup', '.search', doSearch);
+	$(document).on('click', '.submit', userFormPost);
 });
 
-function doSearch()
-{
-	console.log('doSearch');
-	var key = $(this).val();
-	var list = $('#search-results');
-	if ('' === key) {
-		list.hide();
-		return;
-	}
+$(document).on('pagecontainerbeforeshow', (e) => {
+	console.log('+pagecontainerbeforeshow');
+	(()=>{
+		var id = $.mobile.activePage.attr('id');
+		//console.log('page id : '+id);
+		var decide = {
+			'adminindexpage': ()=>{
+			 	//console.log('register events for : '+id);
+			},
+			'indexpage': ()=>{
+			 	//console.log('register events for index page');
+			 	$('#'+id).off('click', '.user-reaction');
+				$('#'+id).off('click', '.user-comment-link');
+				$('#'+id).off('click', '.user-comment-submit');
+			 	$('#'+id).on('click', '.user-reaction', userReactionPost);
+				$('#'+id).on('click', '.user-comment-link', userCommentsShow);
+				$('#'+id).on('click', '.user-comment-submit', userCommentPost);
+			},
+			'default': ()=>{
+				//console.log('resiter default events'); 
+			},
+		}
+		return (decide[id])?decide[id]():decide['default']();
+	})();
+	//$(this).enhanceWithin();
+});
 
-	$.ajax({url: '/ajax/search/',
-		data: key,
-		type: 'POST',
-		async: 'true',
-		dataType: 'text',
-		success: function (data, status, xhr) {
-			console.log('success : ' + data);
-			var item = null;
-			list.empty();
-			jsonData = jQuery.parseJSON(data).text;
-			for (i = 0; i < jsonData.length; ++i) {
-				item = '<li data-filtertext="'+ jsonData[i] +'"><a href="#">'+ jsonData[i] +'</a></li>';
-				list.append(item);
-			}
-			list.show();
-			list.listview('refresh');
+$(document).on('pagecontainershow', (e) => {
+	console.log('+pagecontainershow');
+});
+
+function userFormPost(e)
+{
+	console.log("+userFormPost");
+	e.preventDefault();
+	var form = $(this).parents('form');
+	var action = form.attr('action');
+	console.log('action : '+ action);
+	postRequest(action, form.serialize(), (status, result) => {
+		if (status === true) {
+			Toast.show(result.message);
+		} else {
+			Toast.show(result.error);
+			console.log('error : '+result.error);
 		}
 	});
 }
 
-function userReaction()
+function showSearchList(pThis, status)
 {
-	var pThis = $(this);
-	var reaction = pThis.text();
-	var article_id = pThis.parents('.user-reaction-div').attr('article-id');
-	console.log('user reaction : '+ reaction);
-	$.ajax({url: '/user/post/reaction/',
-		data: {user_reaction:reaction, article_id:article_id},
-		type: 'POST',
-		async: 'true',
-		dataType: 'text',
-		success: function (data, status, xhr) {
-			mimeType = xhr.getResponseHeader("content-type");
-			if (mimeType.indexOf('json') > -1) {
-				console.log('success : ' + data);
-				jsonData = jQuery.parseJSON(data);
-				switch(jsonData.status) {
-				case 302:
-					location.href = jsonData.url;
-					break;
-				case 200:
-					var count = 0;
-					var other = null;
-					switch(reaction) {
-					case 'like':
-						count = parseInt(pThis.attr('article-likes')) + 1;
-						pThis.attr('article-likes', count);
-						pThis.text('liked');
-						pThis.next().text('['+count+']');
-						other = pThis.parent().next();
-						resetDislike(other);
-						pThis.parent().attr('dais-active', 'true');
-						break;
-					case 'dislike':
-						count = parseInt(pThis.attr('article-dislikes')) + 1;
-						pThis.attr('article-dislikes', count);
-						pThis.text('disliked');
-						pThis.next().text('['+count+']');
-						other = pThis.parent().prev();
-						resetLike(other);
-						pThis.parent().attr('dais-active', 'true');
-						break;
-					case 'liked':
-						resetLike(pThis.parent());
-						break;
-					case 'disliked':
-						resetDislike(pThis.parent());
-						break;
-					default:
-						break;
-					}
-				default:
-					Toast.show('message : '+jsonData.message);
-					break;
-				}
-			} else if (mimeType.indexOf('html') > -1) {
-				// handle html data
+	console.log('+showSearchList : '+status);
+	if (status === true) {
+		pThis.parents(".search-box").find(".search-results").show();
+	} else {
+		pThis.parents(".search-box").find(".search-results").hide();
+	}
+}
+
+function doSearch(e)
+{
+	console.log('+doSearch');
+	var This = $(this);
+	//var list = $('#search-results');
+	var list = This.parents(".search-box").find(".search-results");
+	var key = This.val();
+	if ('' === key) {
+		list.hide();
+		return;
+	}
+	var data = {'keyword': key};
+	postRequest('/ajax/search/', data, (status, result) => {
+		if (status === true) {
+			var jsonData = result.text;
+			var it = null;
+			list.empty();
+			list.show();
+			for (i in jsonData) {
+				it = '<li data-filtertext="'+ jsonData[i] +'"><a href="#">'+ jsonData[i] +'</a></li>';
+				//console.log('item : '+ item);
+				list.append(it);
+			}
+			list.listview('refresh');
+		} else {
+			console.log('failed to search');
+		}
+	});
+}
+
+function userReactionPost(e)
+{
+	console.log("+userReactionPost");
+	var This = $(this);
+	var reaction = This.text();
+	var article_id = This.parents('.user-reaction-div').attr('article-id');
+	console.log('+userReactionPost');
+	var data = {'user_reaction':reaction, 'article_id':article_id}
+	postRequest('/post/post-reaction/', data, (status, result) => {
+		if (status === true) {
+			var count = 0;
+			var other = null;
+			switch(reaction) {
+			case 'like':
+				count = parseInt(This.attr('article-likes')) + 1;
+				This.attr('article-likes', count);
+				This.text('liked');
+				This.next().text('['+count+']');
+				other = This.parent().next();
+				resetDislike(other);
+				This.parent().attr('dais-active', 'true');
+				break;
+			case 'dislike':
+				count = parseInt(This.attr('article-dislikes')) + 1;
+				This.attr('article-dislikes', count);
+				This.text('disliked');
+				This.next().text('['+count+']');
+				other = This.parent().prev();
+				resetLike(other);
+				This.parent().attr('dais-active', 'true');
+				break;
+			case 'liked':
+				resetLike(This.parent());
+				break;
+			case 'disliked':
+				resetDislike(This.parent());
+				break;
+			default:
+				break;
 			}
 		}
 	});
@@ -172,7 +144,7 @@ function userReaction()
 
 function resetLike(obj)
 {
-	console.log('resetLike');
+	console.log('+resetLike');
 	if (obj.attr('dais-active') === 'true') {
 		var likeObj = obj.children('.user-reaction');
 		var count = parseInt(likeObj.attr('article-likes')) - 1;
@@ -180,13 +152,13 @@ function resetLike(obj)
 		likeObj.next().text((count>0)?'['+count+']':'');
 		likeObj.text('like');
 		obj.attr('dais-active', 'false');
-		console.log('resetLike Done');
+		console.log('-resetLike');
 	}
 }
 
 function resetDislike(obj)
 {
-	console.log('resetDislike');
+	console.log('+resetDislike');
 	if (obj.attr('dais-active') === 'true') {
 		var likeObj = obj.children('.user-reaction');
 		var count = parseInt(likeObj.attr('article-dislikes')) - 1;
@@ -194,12 +166,14 @@ function resetDislike(obj)
 		likeObj.next().text((count>0)?'['+count+']':'');
 		likeObj.text('dislike');
 		obj.attr('dais-active', 'false');
-		console.log('resetDislike Done');
+		console.log('-resetDislike');
 	}
 }
 
-function userComment()
+function userCommentsShow(e)
 {
+	e.preventDefault();
+	console.log("+userCommentsShow");
 	var cw = $(this).next('.user-comments-wid');
 	if (cw.exists()) {
 		console.log("hiding comment widget");
@@ -212,80 +186,134 @@ function userComment()
 		var xx = $('#user-comments-wid').clone().removeAttr('id');
 		xx.find('#article_id').val(article_id);
 		xx.insertAfter($(this)).show();
-		loadPostComments(xx.find('.user-comments'), article_id, 0, 10);
+		loadComments(xx.find('.user-comments'), article_id, 0, 10);
 	}
 }
 
-function loadPostComments(pThis, art_id, s, c)
+function loadComments(pThis, art_id, start, count)
 {
-	console.log('loadPostComments');
-	$.ajax({url: '/user/load/post-comments/',
-		data: {'article_id':art_id, 'comment_start':0, 'comment_count':5},
-		type: 'POST',
-		async: 'true',
-		dataType: 'text',
-		success: function (data, status, xhr) {
-			mimeType = xhr.getResponseHeader("content-type");
-			if (mimeType.indexOf('json') > -1) {
-				console.log('success : ' + data);
-				jsonData = jQuery.parseJSON(data);
-				switch(jsonData.status) {
-				case 302:
-					location.href = jsonData.url;
-					break;
-				case 200:
-				console.log('200');
-					//Toast.show(jsonData.message);
-					console.log(jsonData.comments);
-					publishComments(pThis, jsonData.comments);
-					break;
-				default:
-					break;
-				}
-			} else if (mimeType.indexOf('html') > -1) {
-				// handle html data
-			}
-		},
-		error: function (xhr,error) {
-			console.log('error : '+ error + ', status : '+xhr.status);
-			Toast.show('Network Error occured');
+	console.log('+loadComments');
+	var data = {'article_id':art_id, 'comment_start':start, 'comment_count':count};
+	postRequest('/post/load-post-comments/', data, (status, result) => {
+		displayComments(pThis, result.comments);
+	});
+}
+
+function displayComments(pThis, cmts)
+{
+	console.log('+publishComments');
+	pThis.show();
+	if (!cmts) {
+		console.log('list is empty');
+		return;
+	}
+	for (i = 0; i < cmts.length; ++i) {
+		appendComment(pThis, cmts[i]);
+	}
+	//pThis.show();
+}
+
+function appendComment(pThis, cmt)
+{
+	console.log('+appendComment');
+	var html = '<div class ="user-comment" comment-id="'+cmt.id+'" >'
+		+ '<div class="user-name" > <strong>' + cmt.author_name + '</strong></div>'
+		+ '<div class="comment-text" >' + cmt.text + '</div>'
+		+ '<div class="h-bar" ></div>'
+		+ '</div>'
+	pThis.append(html);
+}
+
+function userCommentPost(e)
+{
+	e.preventDefault();
+	console.log('+userCommentPost');
+	var This = $(this);
+	var form = This.parents('form');
+	var action = form.attr('action');
+	var cmtBox = form.find('.comment-text');
+	var text = cmtBox.val();
+	if (text == '') {
+		console.log('Comment cannot be empty');
+		Toast.show('Comment cannot be empty');
+		return;
+	}
+	console.log("comment : "+text);
+	var data = form.serialize();
+	postRequest(action, data, (status, result) => {
+		if(status === true) {
+			var cmtCont = This.parents('.user-comments-wid').children('.user-comments');
+			appendComment(cmtCont, result.comment);
+			cmtBox.val('');
+			Toast.show('Posted');
 		}
 	});
 }
 
-function publishComments(pThis, cmts)
-{
-	console.log('publishComments');
-	var html = '';
-	var cmt = null;
-	for (i = 0; i < cmts.length; ++i) {
-		cmt = cmts[i];
-		html += '<div class ="user-comment" comment-id="'+cmt.id+'" >'
-		+ '<div class="user-name" > <strong>' + cmt.author__email + '</strong></div>'
-		+ '<div class="comment-text" >' + cmt.text + '</div>'
-		+ '<div class="h-bar" ></div>'
-		+ '</div>';
-	}
 
-	pThis.html(html).show();
+function followTopic(pThis)
+{
+	console.log("+followTopic");
+	var form = $('#topic-select-form');
+	var action = form.attr('action');
+	var id = parseInt(pThis.attr('data-tid'));
+	var followed = parseInt(pThis.attr("data-tf"));
+	var data = form.serializeArray();
+	data.push({name: 'topic_id', value: id}, {name: 'topic_followed', value: followed});
+	console.log("data : "+JSON.stringify(data));
+
+	var lPromise = jQuery.data(pThis, 'promise');
+	console.log("promise : "+lPromise);
+	if (lPromise != undefined) {
+		lPromise.reject();
+		Jquery.removeData(This, 'promise');
+	}
+	
+	lPromise = new Promise(function(resolve, reject){
+		postRequest(action, data, (status, result)=>{
+			(status === true) ? resolve(result) : reject(result);
+		});
+	});
+	jQuery.data(pThis, 'promise', lPromise);
+
+	lPromise.then(function(arg){
+		console.log('resolved : '+arg);
+		console.log("followed : "+followed);
+		if (followed == 0) {
+			pThis.removeClass('topic-item-uf');
+			pThis.addClass('topic-item-f');
+			pThis.attr('data-tf', 1);
+		} else {
+			pThis.removeClass('topic-item-f');
+			pThis.addClass('topic-item-uf');
+			pThis.attr('data-tf', 0);
+		}
+	}).catch(function(arg){
+		console.log('rejected : '+arg);
+	});
 }
 
-function userCommentSubmit(e)
+function postRequest(pAction, pData, pCallback)
 {
-	e.preventDefault();
-	var pThis = $(this);
-	var form = pThis.parents('form');
-	var formAction = form.attr('action');
-	console.log('action : '+ formAction);
-	$.ajax({url: formAction,
-		data: form.serialize(),
+	console.log("+postRequest");
+	$.ajax({url: pAction,
+		data: pData,
 		type: 'POST',
 		async: 'true',
 		dataType: 'text',
+		beforeSend: function(xhr) {
+			console.log('+beforeSend');
+			$.mobile.loading('show');
+		},
+		complete: function(res) {
+			// This function is called at last for cleanup
+			console.log('+comeplete :'+ res.status);
+			$.mobile.loading('hide');
+		},
 		success: function (data, status, xhr) {
 			mimeType = xhr.getResponseHeader("content-type");
 			if (mimeType.indexOf('json') > -1) {
-				console.log('success : ' + data);
+				console.log('response : ' + data);
 				jsonData = jQuery.parseJSON(data);
 				switch(jsonData.status) {
 				case 302:
@@ -293,27 +321,26 @@ function userCommentSubmit(e)
 					location.href = jsonData.url;
 					break;
 				case 200:
-				console.log('200');
-					Toast.show(jsonData.message);
+					pCallback(true, jsonData);
 					break;
 				case 204:
-				console.log('204');
-					Toast.show('Done');
+					pCallback(true, {'message': 'posted'});
 					break;
 				default:
+					pCallback(false, jsonData);
 					break;
 				}
-			} else if (mimeType.indexOf('html') > -1) {
-				// handle html data
+			} else {
+				pCallback(false, {'error':'unexpected content type'});
 			}
 		},
 		error: function (xhr,error) {
-			console.log('error : '+ error + ', status : '+xhr.status);
-			Toast.show('Network Error occured');
+			console.log('status : '+xhr.status);
+			Toast.show('Network error occured');
+			pCallback(false, {'error':error});
 		}
 	});
 }
-
 
 /****************** Exteded Jquery *******************/
 jQuery.fn.exists = function(){return this.length>0;}

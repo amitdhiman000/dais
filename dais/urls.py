@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^', include('home.urls')),
     url(r'^daisadmin/', include('daisadmin.urls')),
     url(r'^home/', include('home.urls')),
+    url(r'^post/', include('post.urls')),
     url(r'^user/', include('user.urls')),
     url(r'^ajax/', include('ajax.urls')),
 ]

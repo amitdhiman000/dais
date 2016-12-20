@@ -18,17 +18,17 @@ def get_user(request):
 		email = request.session[USER_EMAIL_KEY]
 		name = request.session[USER_NAME_KEY]
 		level = request.session[USER_LEVEL_KEY]
-		user = User(uid=uid, email=email, name=name, level=level)
+		user = User(pk=uid, email=email, name=name, level=level)
 	else:
 		user = Guest()
 
 	#print ('user name : '+user.name)
 	return user
 
-def auth_user(username='', password=''):
+def auth_user(email, password):
 	user = None
 	try:
-		user = User.objects.get(email=username, password=password)
+		user = User.objects.get(email=email, password=password)
 	except ObjectDoesNotExist:
 		user = None
 
@@ -41,7 +41,7 @@ def login(request, user):
 	request.session[USER_NAME_KEY] = user.name
 	request.session[USER_LEVEL_KEY] = user.level
 	request.session[USER_AUTH_KEY] = True
-	request.session.set_expiry(60*10) # 10 minutes session timeout
+	request.session.set_expiry(60*60) # 10 minutes session timeout
 
 def logout(request):
 	request.session.flush()

@@ -7,10 +7,11 @@ from django.core import serializers
 import json
 
 ## custom packages
-from device import get_template
-from common import redirect_if_loggedin, login_required, __redirect
+import device
+from common import post_required, login_required, redirect_if_loggedin, __redirect
 ## custom authentication
-from .models import User, Article, ArticleReaction, ArticleComment, Topic
+from .models import User
+from post.models import Article, ArticleReaction, ArticleComment, Topic, TopicFollower
 from .control import UserRegControl
 from . import backends as auth
 
@@ -29,7 +30,7 @@ def signin_view(request):
 		del request.session['form_values']
 
 	data.update(csrf(request))
-	file = get_template(request, 'user_signin.html')
+	file = device.get_template(request, 'user_signin.html')
 	return render(request, file, data)
 
 #functions for registration
@@ -42,76 +43,89 @@ def signup_view(request):
 		del request.session['form_errors']
 		del request.session['form_values']
 
-	file = get_template(request, 'user_signup.html')
+	file = device.get_template(request, 'user_signup.html')
 	return render(request, file, data)
 
 def signout(request):
 	auth.logout(request)
 	return __redirect(request, settings.USER_LOGIN_URL)
 
-
+@post_required
 def signin_auth(request):
 	pprint(request.POST)
-	if request.method == 'POST':
-		username = request.POST.get('email', '')
-		password = request.POST.get('pass', '')
-		user = auth.auth_user(username=username, password=password)
-
-		if user is not None:
-			pprint(vars(user))
+	error = None
+	email = request.POST.get('email', '').strip(' \t\n\r')
+	password = request.POST.get('pass', '').strip(' \t\n\r')
+	if email == '' or password == '':
+		error = {'user': 'Email or Password cannot be empty'}
+	else:
+		user = auth.auth_user(email=email, password=password)
+		if user != None:
 			auth.login(request, user)
-			#request.session.set_expiry(10)
+			#pprint(vars(user))
 			return __redirect(request, settings.USER_PROFILE_URL)
 		else:
-			form_errors = {'user':'*Email or password is wrong!!'}
-			form_values = {'user':request.POST.get('user', '')}
-			request.session['form_errors'] = form_errors
-			request.session['form_values'] = form_values
-			return __redirect(request, settings.USER_LOGIN_URL)
+			error = {'user':'*Email or password is wrong!!'}
+
+	## Only error case will reach here.
+	if request.is_ajax():
+		return JsonResponse({'status':401, 'error':error})
+	else:
+		request.session['form_errors'] = form_errors
+		request.session['form_values'] = {'email': email}
+		return __redirect(request, settings.USER_LOGIN_URL)
+
+@post_required
+def signup_register(request):
+	pprint(request)
+	error = None
+	user = None
+	control = UserRegControl()
+	if control == None or control.parseRequest(request.POST) == False:
 		return __redirect(request, settings.INVALID_REQUEST_URL)
 
-def signup_register(request):
-	data = {'title':'SignUp Successful', 'page':'user'}
-	if request.method == 'POST':
-		control = None
-		control = UserRegControl(request.POST)
-		if control is not None:
-			if control.validate():
-				user = control.register()
-				print('registration successful')
-				auth.login(request, user)
-				if request.is_ajax():
-					return __redirect(request, settings.USER_SIGNUP_SUCCESS_URL)
-				else:
-					file = get_template(request, 'user_registered.html')
-					return render(request, file, data)
+	if control.validate():
+		user = control.register()
+		if user != None:
+			print('registration successful')
+			auth.login(request, user)
+			return __redirect(request, settings.USER_SIGNUP_SUCCESS_URL)
+		else:
+			error = {'user':'server error, try again'}
+			if request.is_ajax():
+				return JsonResponse({'status':401, 'message': 'Something wrong', 'error':error})
 			else:
-				pprint(control.get_errors());
-				request.session['form_errors'] = control.get_errors()
 				request.session['form_values'] = control.get_values()
+				request.session['form_errors'] = error
 				return __redirect(request, settings.USER_SIGNUP_URL)
-	return __redirect(request, settings.INVALID_REQUEST_URL)
-
+	else:
+		pprint(control.get_errors());
+		if request.is_ajax():
+			return JsonResponse({'status':401, 'message': 'Something wrong', 'error':control.get_errors()})
+		else:
+			request.session['form_values'] = control.get_values()
+			request.session['form_errors'] = control.get_errors()
+			return __redirect(request, settings.USER_SIGNUP_URL)
 
 @login_required
 def signup_success_view(request):
 	print('registration success')
 	data = {'title':'Signup :: Success', 'page':'user'}
-	file = get_template(request, 'user_registered.html');
+	file = device.get_template(request, 'user_registered.html');
 	return render(request, file, data)
 
 @login_required
 def profile_view(request):
 	print('profile')
 	data = {'title':'Profile', 'page':'user'}
-	file = get_template(request, 'user_profile.html');
+	file = device.get_template(request, 'user_profile.html');
 	return render(request, file, data)
 
 
 def invalid_view(request):
 	data = {'title': 'Invalid'};
 #	return HttpResponse ('This is Invalid Request')
-	file = get_template(request, 'invalid.html')
+	file = device.get_template(request, 'invalid.html')
 	return render(request, file, data)
 
 
@@ -122,217 +136,54 @@ def invalid_view(request):
 def user_info_view(request):
 	return profile_view(request);
 
+@login_required
 def user_topics_select_view(request):
 	data = {'title': 'Follow Topics', 'page':'user'};
 	topics = Topic.get_topics(request.user)
 	data.update({'topics':topics})
-	file = get_template(request, 'user_topics_select.html')
+	file = device.get_template(request, 'user_topics_select.html')
 	return render(request, file, data)
 
+@login_required
 def user_topic_selected(request):
-	pass
+	pprint(request.POST)
+	error = None
+	msg = None
+	topic_id = request.POST.get('topic_id', -1)
+	topic_followed = int(request.POST.get('topic_followed', 0))
+	if topic_followed == 0:
+		if TopicFollower.add_follower(request.user, topic_id):
+			msg = 'folllowed'
+		else:
+			error = 'Server operation failed'
+	elif topic_followed == 1:
+		if TopicFollower.remove_follower(request.user, topic_id):
+			msg = 'unfollowed'
+		else:
+			error = 'Server operation failed'
+	else:
+		error = 'Invalid request'
+
+	## send the response
+	if request.is_ajax():
+		if error == None:
+			return JsonResponse({'status':204, 'message': msg})
+		else:
+			return JsonResponse({'status':401, 'error': error})
+	else:
+		return __redirect(request, settings.HOME_PAGE_URL)
 
 def user_mails_view(request):
 	data = {'title': 'User mails', 'page':'user'};
-	file = get_template(request, 'user_mails.html')
+	file = device.get_template(request, 'user_mails.html')
 	return render(request, file, data)
 
 def user_stats_view(request):
 	data = {'title': 'User stats', 'page':'user'};
-	file = get_template(request, 'user_stats.html')
+	file = device.get_template(request, 'user_stats.html')
 	return render(request, file, data)
 
 def user_settings_view(request):
 	data = {'title': 'User settings', 'page':'user'};
-	file = get_template(request, 'user_settings.html')
+	file = device.get_template(request, 'user_settings.html')
 	return render(request, file, data)
-
-
-##
-## User topic add functionality
-##
-
-@login_required
-def post_add(request):
-	pprint(request.POST)
-	title = request.POST.get('title', None)
-	text = request.POST.get('text', None)
-	try:
-		article = Article.create(request.user, title, text)
-	except ValueError as e:
-		print('ValueError : '+ str(e))
-	except:
-		print('Unknown error')
-
-	## send the response
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'published'})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-@csrf_exempt
-@login_required
-def post_comment(request):
-	pprint(request.POST)
-	#try:
-	article_id = request.POST.get('article_id', '')
-	text = request.POST.get('comment', '')
-	article = Article.get_article(article_id)
-	user = request.user
-	ArticleComment.create(article, user, text)
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success'})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-@csrf_exempt
-@login_required
-def reply_comment(request):
-	pprint(request.POST)
-	#try:
-	comment_id = request.POST.get('comment_id', '')
-	text = request.POST.get('comment', '')
-	comment = CommentReply.get_comment(comment_id)
-	user = request.user
-	ReplyComment.create(comment, user, text)
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success'})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-
-## Load reply and comments
-##
-
-@csrf_exempt
-@login_required
-def load_post_comments(request):
-	pprint(request.POST)
-	#try:
-	article_id = request.POST.get('article_id', -1)
-	start = int(request.POST.get('comment_start', 0))
-	count = int(request.POST.get('comment_count', 5))
-	if start < 0:
-		start = 0
-	if count < 0 or count > 10:
-		count = 10
-	objs = ArticleComment.get_comments(article_id, start, count)
-
-	pprint(objs)
-
-	data = list(objs)
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success', 'comments': data})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-@csrf_exempt
-@login_required
-def load_reply_comments(request):
-	pprint(request.POST)
-	#try:
-	comment_id = request.POST.get('comment_id', -1)
-	start = int(request.POST.get('comment_start', 0))
-	count = int(request.POST.get('comment_count', 5))
-	if start < 0:
-		start = 0
-	if count < 0 or count > 10:
-		count = 10
-	
-	objs = ReplyComment.get_comments(comment_id, start, count)
-	data = serializers.serialize('json', [objs,])
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success', 'comments': data})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-
-## User Reactions handling.
-##
-
-@csrf_exempt
-@login_required
-def post_reaction(request):
-	result = 'error'
-
-	#try:
-	reaction = request.POST.get('user_reaction', 'like')
-	article_id = request.POST.get('article_id', -1)
-	article = Article.get_article(article_id)
-	user = request.user
-	if reaction == 'like':
-		ArticleReaction.like(user, article)
-		result = 'liked'
-	elif reaction == 'dislike':
-		ArticleReaction.dislike(user, article)
-		result = 'disliked'
-	elif reaction == 'liked':
-		ArticleReaction.remove(user, article)
-		result = 'like canceled'
-	elif reaction == 'disliked':
-		ArticleReaction.remove(user, article)
-		result = 'dislike canceled'
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': result})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-@csrf_exempt
-@login_required
-def post_comment_reaction(request):
-	result = 'error'
-
-	#try:
-	reaction = request.POST.get('user_reaction', 'like')
-	comment_id = request.POST.get('comment_id', -1)
-	comment = ArticleComment.get_article(comment_id)
-	user = request.user
-	if reaction == 'like':
-		ArticleCommentReaction.like(user, comment)
-		result = 'liked'
-	elif reaction == 'dislike':
-		ArticleCommentReaction.dislike(user, comment)
-		result = 'disliked'
-	elif reaction == 'liked':
-		ArticleCommentReaction.remove(user, comment)
-		result = 'like canceled'
-	elif reaction == 'disliked':
-		ArticleCommentReaction.remove(user, comment)
-		result = 'dislike canceled'
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': result})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)
-
-@csrf_exempt
-@login_required
-def reply_comment_reaction(request):
-	result = 'error'
-
-	#try:
-	reaction = request.POST.get('user_reaction', 'like')
-	comment_id = request.POST.get('comment_id', -1)
-	comment = ReplyComment.get_comment(comment_id)
-	user = request.user
-	if reaction == 'like':
-		ReplyCommentReaction.like(user, comment)
-		result = 'liked'
-	elif reaction == 'dislike':
-		ReplyCommentReaction.dislike(user, comment)
-		result = 'disliked'
-	elif reaction == 'liked':
-		ReplyCommentReaction.remove(user, comment)
-		result = 'like canceled'
-	elif reaction == 'disliked':
-		ReplyCommentReaction.remove(user, comment)
-		result = 'dislike canceled'
-
-	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': result})
-	else:
-		return __redirect(request, settings.HOME_PAGE_URL)

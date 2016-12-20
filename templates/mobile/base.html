@@ -17,10 +17,10 @@
 
 		<script type="text/javascript">
 			$(document).on("mobileinit", function() {
+				console.log('+mobileinit');
 				$.mobile.ignoreContentEnabled = true;
-			});
-			$(document).ready(function() {
-				$("body").on("swipeleft",function(event) {
+				$(document).on("swipeleft",function(event) {
+					console.log('+swipeleft');
 					if(event.handled !== true) { // This will prevent event triggering more then once
 						var nextpage = $.mobile.activePage.next('[data-role="page"]');
 						// swipe using id of next page if exists
@@ -32,7 +32,8 @@
 					return false;
 				});
 
-				$("body").on("swiperight",function(event){
+				$(document).on("swiperight",function(event){
+					console.log('+swiperight');
 					if(event.handled !== true) { // This will prevent event triggering more then once
 						var prevpage = $(this).prev('[data-role="page"]');
 						if (prevpage.length > 0) {
@@ -48,7 +49,7 @@
 		{% block script %}
 		{% endblock %}
 		<style type="text/css">
-			.toast { display: none; min-width: 30%;	height: auto; position:absolute; left:50%; margin-left:-25%; bottom:10%; background-color: #383838; color: #F0F0F0; font-family: Calibri; 	font-size: 1.0em; padding:0.9em; text-align:center;
+			.toast { display: none; min-width: 30%; max-width: 80%;	height: auto; position:absolute; left:50%; margin-left:-20%; bottom:10%; background-color: #E9E9E9; color: #111; font-family: Calibri; 	font-size: 1.0em; padding:0.9em; text-align:center;
 				border-radius: 2px;
 				-webkit-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
 				-moz-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
