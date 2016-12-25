@@ -1,4 +1,4 @@
-{% extends 'mobile/base.html' %}
+{% extends './base.html' %}
 
 {% block styles %}
 {% endblock %}
@@ -6,8 +6,8 @@
 
 {% block content %}
 <div data-role="page" id="topicspage" data-dom-cache="false" >
-	{% include 'mobile/header.html' %}
-	{% include 'mobile/user_profile_nav.html' %}
+	{% include './header.html' %}
+	{% include './user_profile_nav.html' %}
 
 	<style>
 		.topic-item { float: left; padding: 0.5em 0.9em; border-radius: 4px; margin: 5px; }
@@ -31,6 +31,6 @@
   			{% endfor %}
   		</div>
 	</div>
-	{% include 'mobile/footer.html' %}
+	{% include './footer.html' %}
 </div>
 {% endblock %}

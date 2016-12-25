@@ -43,4 +43,4 @@ def get_template(request, file_name):
 		return 'mobile/'+file_name
 	else:
 		print('desktop : '+device['desktop'])
-		return 'mobile/'+file_name
+		return 'desktop/'+file_name

@@ -1,4 +1,4 @@
-{% extends 'mobile/base.html' %}
+{% extends './base.html' %}
 
 {% block content %}
 <div data-role="page" id="adminindexpage" name="adminindexpage" data-dom-cache="false" >
@@ -27,7 +27,7 @@
 			});
 		}
 	</script>
-	{% include 'mobile/header.html' %}
+	{% include './header.html' %}
 	<div data-role="main" class="ui-content dais-ui-content">
 		<div class="ui-bar ui-bar-a ui-corner-all" style="margin-top: 5px;">
 			<strong>Topics <strong>
@@ -65,6 +65,6 @@
 	        </div>
 	    </form>
 	</div>
-	{% include 'mobile/footer.html' %}
+	{% include './footer.html' %}
 </div>
 {% endblock %}

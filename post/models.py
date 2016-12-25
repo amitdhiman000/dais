@@ -1,8 +1,11 @@
 from django.db import models
 from django.db import connection
-from datetime import datetime
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.conf import settings
+from datetime import datetime
+import base64
+from django.utils.safestring import mark_safe
 ## models import
 from user.models import User
 ## debug
@@ -17,15 +20,35 @@ class Topic(models.Model):
 
 	@classmethod
 	def get_topics(klass, user):
-		topics = klass.objects.extra(select={'name':'topic_name'}).order_by('-topic_followers')
-		#tmp = TopicFollower.objects.filter(user=user,topic=topic).order_by('topic__topic_followers')
+		print(connection.queries)
+		print('\n')
+		topics = klass.objects.annotate(name=models.F('topic_name')).order_by('-topic_followers').values('id', 'name', 'topic_followers')
+		marked = TopicFollower.objects.annotate(topic_id=models.F('topic__id')).filter(user=user).values('topic_id')
+
+		hash = {}
+		for mark in marked:
+			hash[mark['topic_id']] = 1
+
+		for topic in topics:
+			if topic['id'] in hash:
+				topic['followed'] = 1
+			else:
+				topic['followed'] = 0
+
+		for mark in marked:
+			print(mark['topic_id'])
+
+		'''
 		for topic in topics:
 			if TopicFollower.objects.filter(user=user,topic=topic).exists():
 				topic.followed = 1
 			else:
 				topic.followed = 0
 
-		print(connection.queries)
+		for t in topics:
+			print('followed '+str(t['id'])+'/'+str(t['followed']))
+		'''
+		#print(connection.queries)
 		return topics
 
 	@classmethod
@@ -164,11 +187,15 @@ class Article(Post):
 	@classmethod
 	def get_user_articles(klass, user, start=0, count=10):
 		articles = klass.objects.order_by('-created_date')[start:count]
+
+		data = open(settings.STATIC_ROOT+"/images/icons-svg/user-1.svg", "rb").read()
+		image = "data:image/svg+xml;base64,%s" % base64.b64encode(data).decode('utf8')
 		for art in articles:
 			tmp = ArticleReaction.objects.filter(article=art)
 			art.likes = tmp.filter(reaction=1).count()
 			art.dislikes = tmp.filter(reaction=-1).count()
 			art.reaction = 0
+			art.author.image = image
 			if user.is_loggedin():
 				try:
 					art.reaction = ArticleReaction.objects.get(article=art, user=user).reaction

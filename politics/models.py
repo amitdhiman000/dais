@@ -18,6 +18,10 @@ class Party(models.Model):
 		verbose_name = _('Party')
 		verbose_name_plural= _('Parties')
 
+	@classmethod
+	def get_list(klass):
+		list = klass.objects.all()
+		return list
 
 
 class Leader(models.Model):

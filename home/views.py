@@ -13,10 +13,10 @@ from pprint import pprint
 
 # Create your views here.
 
-def invalid_view(request):
-	data = {'title': 'Invalid'};
+def invalid_request_view(request):
+	data = {'title': 'Invalid Request'};
 #	return HttpResponse ('This is Invalid Request')
-	file = device.get_template(request, 'invalid.html')
+	file = device.get_template(request, 'error_invalid_request.html')
 	return render(request, file, data)
 
 def index(request):
@@ -30,7 +30,7 @@ def index(request):
 	return render(request, template, data)
 
 def topics_view(request):
-	template = device.get_template(request, 'topics.html')
+	template = device.get_template(request, 'post_topics.html')
 	data = {'title':'Topics', 'page':'topics'}
 	data.update(csrf(request))
 	return render(request, template, data)
@@ -47,20 +47,20 @@ def polls_view(request):
 	data = {'title':'Polls', 'page':'topics'}
 	polls = Poll.get_user_polls(request.user)
 	data.update({'polls': polls})
-	template = device.get_template(request, 'polls.html')
+	template = device.get_template(request, 'post_polls.html')
 	return render(request, template, data)
 
 def petitions_view(request):
 	data = {'title':'Petitions', 'page':'topics'}
 	#polls = Petition.get_user_petitions(request.user)
 	#data.update({'polls': polls})
-	template = device.get_template(request, 'petitions.html')
+	template = device.get_template(request, 'post_petitions.html')
 	return render(request, template, data)
 
 @login_required
 def new_topic_view(request):
 	data = {'title':'New Topic', 'page':'topics'}
-	template = device.get_template(request, 'new_topic.html')
+	template = device.get_template(request, 'post_new_topic.html')
 	return render(request, template, data)
 
 @post_required

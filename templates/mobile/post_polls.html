@@ -1,4 +1,4 @@
-{% extends 'mobile/base.html' %}
+{% extends './base.html' %}
 
 {% block styles %}
 {% endblock %}
@@ -6,8 +6,8 @@
 
 {% block content %}
 <div data-role="page" id="pollspage" data-dom-cache="false" >
-	{% include 'mobile/header.html' %}
-	{% include 'mobile/topics_nav.html' %}
+	{% include './header.html' %}
+	{% include './post_topics_nav.html' %}
 	<div data-role="main" class="ui-content ui-corner-all">
 		{% if polls.len == 0 %}
 			<div class="ui-bar ui-bar-a">
@@ -40,6 +40,6 @@
 		{% endfor %}
 	</div>
 
-	{% include 'mobile/footer.html' %}
+	{% include './footer.html' %}
 </div>
 {% endblock %}

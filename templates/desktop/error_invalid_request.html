@@ -1,8 +1,8 @@
-{% extends 'mobile/base.html' %}
+{% extends './base.html' %}
 
 {% block content %}
 <div data-role="page" id="invalidpage" data-dom-cache="false" >
-	{% include 'mobile/header.html' %}
+	{% include './header.html' %}
 	<div class="ui-corner-all custom-corners" style="margin-top: 5px;">
 		<div class="ui-bar ui-bar-a">
 			<strong>Invalid request</strong>
@@ -16,6 +16,6 @@
   		</div>
 	</div>
 
-	{% include 'mobile/footer.html' %}
+	{% include './footer.html' %}
 </div>
 {% endblock %}

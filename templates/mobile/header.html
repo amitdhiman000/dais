@@ -1,15 +1,13 @@
 {% load staticfiles %}
-<style>
-#header-top .ui-content { padding: 0.2em; }
-#website-info { width:13%; float: left; }
-#website-info img { /* width: 48px; height: 48px; */ }
-.search-box { float: left; width: 80%; }
-.search-results { position: absolute; width: 80%; z-index:50; display: none; }
-</style>
 
 <div data-role="header" data-position="fixed" data-tap-toggle="false" >
+	<style>
+	#website-info { width:13%; float: left; }
+	.search-box { float: left; width: 80%; }
+	.search-results { position: absolute; width: 80%; z-index:50; display: none; }
+	</style>
 	<div id="header-top" class="ui-content"  >
-		<div id="website-info" class="ui-content" >
+		<div id="website-info" class="ui-content" style="padding: 0.2em;">
 			<!-- website logo -->
 			<a href="/" data-ajax="false" style="display: block;">
 			<img src="{% static 'images/d-logo-b.png' %}" />
@@ -17,10 +15,10 @@
 		</div>
 		<div class="search-box" data-role="main" class="ui-content" style="padding: 0em 0.5em;" >
 			<form method="post" action="javascript:doSearch()" id="search-form" class="search-form" >
-				<input data-type="search" name="search" id="search" class="search" value="" placeholder="Search here..." autocomplete="off" onblur="showSearchList($(this), false)" onfocus="showSearchList($(this), true)">
+				<input data-type="search" name="search" id="search" class="search" value="" placeholder="Search here..." autocomplete="off" onblur="showSearchList($(this), false)" onfocus="showSearchList($(this), true)" />
 			</form>
 			<ul data-role="listview" data-filter="true" data-inset="true" data-input="#search" class="search-results" style="margin-top: 0em;" >
-			    <li data-filtertext="main page:home page"><a href="#">Home</a></li>
+			    <!--<li data-filtertext="main page:home page"><a href="#">Home</a></li>-->
 			</ul>
 		</div>
 	</div>
@@ -54,26 +52,26 @@
 </div>
 
 <!--  -->
-<div style="position: absolute; bottom: 7%; left: 5%;" >
+<div style="position: fixed; bottom: 7%; left: 5%; z-index: 51" >
 	<a href="#dais-panel" data-icon="bars" data-iconpos="notext" data-role="button" class="dais-fab" >Menu</a>
 </div>
 <div data-role="panel" id="dais-panel" data-position="left" data-display="overlay" >
+	<!-- <a href="#" data-rel="close" data-icon="delete" data-role="button" >Close</a> -->
 	<ul data-role="listview">
 		<li><a href="/politics/news/">News</a></li>
-		<li><a href="/politics/parliament/">Parliament</a></li>
-		<li><a href="/politics/parliament/">Rajayasabha</a></li>
-		<li><a href="/politics/legislative/">State Legislative</a></li>
+		<li><a href="/politics/trending/">Trending</a></li>
 		<li><a href="/politics/latest-debates/">Latest Debates</a></li>
 		<li><a href="/politics/latest-laws/">Latest Laws</a></li>
 		<li><a href="/politics/latest-petitions/">Latest Petitions</a></li>
-		<li><a href="/politics/center-projects/">Center Projects</a></li>
-		<li><a href="/politics/state-projects/">State Projects</a></li>
-		<li><a href="/politics/parties/">Parties</a></li>
-		<li><a href="/politics/legislative/">FDI</a></li>
-		<li><a href="/politics/legislative/">GDP</a></li>
-		<li><a href="/politics/legislative/">Trending</a></li>
+		<li><a href="/politics/center-govt-projects/">Center Govt. Projects</a></li>
+		<li><a href="/politics/state-govt-projects/">State Govt. Projects</a></li>
+		<li><a href="/politics/indian-parliament-members/">Parliament</a></li>
+		<li><a href="/politics/indian-rajyasabha-members/">Rajayasabha</a></li>
+		<li><a href="/politics/state-legislative-members/">State Legislative</a></li>
+		<li><a href="/politics/parties/">Political Parties</a></li>
+		<li><a href="/politics/indian-fdi/">Indian FDI</a></li>
+		<li><a href="/politics/indian-gdp/">Indian GDP</a></li>
 	</ul>
-	<a href="#" style="position: absolute; bottom: 1%; left: 1%;" data-rel="close" data-icon="delete" data-role="button" >Close</a>
 </div>
 
 

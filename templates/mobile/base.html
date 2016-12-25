@@ -12,7 +12,7 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'css/app-widgets.css' %}" />
 		<script type="text/javascript" src="{% static 'js/jquery-1.9.1.min.js' %}" ></script>
 		<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.5.min.js' %}" ></script>
-		<script type="text/javascript" src="{% static 'js/app.js' %}" ></script>
+		<script type="text/javascript" src="{% static 'js/app-mobile.js' %}" ></script>
 		<script type="text/javascript" src="{% static 'js/app-widgets.js' %}" ></script>
 
 		<script type="text/javascript">
@@ -49,22 +49,22 @@
 		{% block script %}
 		{% endblock %}
 		<style type="text/css">
-			.toast { display: none; min-width: 30%; max-width: 80%;	height: auto; position:absolute; left:50%; margin-left:-20%; bottom:10%; background-color: #E9E9E9; color: #111; font-family: Calibri; 	font-size: 1.0em; padding:0.9em; text-align:center;
+			.toast { display: none; min-width: 30%; max-width: 80%;	height: auto; position: fixed; left:50%; margin-left:-20%; bottom:10%; background-color: #e9e9e9; color: #111; font-family: Calibri; 	font-size: 1.0em; padding:0.9em; text-align:center;
 				border-radius: 2px;
 				-webkit-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
 				-moz-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
 				box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
 			}
+			.form-table tr td:first-child { text-align: right; }
 			.h-bar-dotted { border-bottom: 1px dotted #ccc; height: 1px; }
 			.h-bar-solid { border-bottom: 1px solid #ccc; height: 1px; }
-			.ui-page { background: #ffeeee; color: #555;  }
+			.ui-page { background: #f9f9f9; color: #555;  }
 			.ui-content { padding: 0.1em; }
 			.dais-ui-content .ui-content, .dais-ui-content { padding: 0.4em; }
-			.form_table tr td:first-child { text-align: right; }
-			.ui-bar-c { border: 1px solid #DDD; padding: 0.6em 0.8em; background: #E9E9E9; }
-			.dias-float-div { margin-top: 0.5em; padding: 0.2em; border: 1px solid #CCC; box-shadow: 0px 4px 8px #777;background: #FFF; }
-			.dias-float-div:before, .article-div:after { position: absolute; content: ""; transform: rotate(3deg); }
-			.dias-float-div:after { transform: rotate(-3deg); }
+			.ui-bar-c { border: 1px solid #DDD; padding: 0.6em 0.8em; background: #e9e9e9; }
+			.dais-shadow { margin-top: 0.5em; padding: 0.2em; border: 1px solid #ccc; box-shadow: 0px 4px 8px #777;background: #fff; }
+			.dais-shadow:before { position: absolute; content: ""; transform: rotate(3deg); }
+			.dais-shadow:after { transform: rotate(-3deg); }
 		</style>
 		<!-- styles -->
 		{% block style %}

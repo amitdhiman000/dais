@@ -117,15 +117,15 @@ def signup_success_view(request):
 @login_required
 def profile_view(request):
 	print('profile')
-	data = {'title':'Profile', 'page':'user'}
+	data = {'title':'Profile', 'page':'user', 'dataurl':'data-url="'+settings.USER_PROFILE_URL+'"'}
 	file = device.get_template(request, 'user_profile.html');
 	return render(request, file, data)
 
 
-def invalid_view(request):
-	data = {'title': 'Invalid'};
+def invalid_request_view(request):
+	data = {'title': 'Invalid Request'};
 #	return HttpResponse ('This is Invalid Request')
-	file = device.get_template(request, 'invalid.html')
+	file = device.get_template(request, 'error_invalid_request.html')
 	return render(request, file, data)
 
 

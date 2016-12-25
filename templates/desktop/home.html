@@ -1,24 +1,83 @@
-{% extends 'base.html' %}
+{% extends './base.html' %}
 
 {% block style %}
-<style type="text/css" >
-#mid-box { width:100%; }
-#mid-left { float: left; max-width: 50%; border: 1px #333 dotted; }
-#mid-right { float: right; border: 1px #333 dotted; margin-left: 10px; }
+<style type="text/css">
+	.post-div { margin-bottom: 0.5em; padding: 0.7em; border: 1px solid #ddd; background: #fff; }
+	.post-title { padding: 0.3em; }
+	.post-body { margin: 1.2em auto; }
+	.user-info-div { display: table; font-size: 0.8em; }
+	.user-dp-div { display: table-cell; vertical-align: middle; padding: 0.3em; }
+	.user-name-div { display: table-cell; vertical-align: middle; padding: 0.3em; margin-left: 0.5em; }
+	.user-link {}
+	.user-reaction-div { padding: 0.5em 0.5em 0.5em 0.5em; }
+	.user-reaction { width: 30%; }
+	.user-reaction-div a { text-decoration: none; font-size: 0.9em; color: #666; padding: 0.5em; }
+	.user-reaction-div a:hover { text-decoration: underline; }
+	.user-comment { border: 1px solid #ccc; margin-top: 0.2em; padding: 0.2em; }
 </style>
 {% endblock %}
 
 
+{% block pagemenu %}
+{% include './home_nav.html' %}
+{% endblock %}
+
 {% block content %}
-<div id="mid-box" >
-	<div id="mid-left" >
-		<h2>Welcome to Dais</h2>
-		<h4>Desktop Website.</h4>
-	</div>
-	<div id="mid-right" >
-		<h3>Get all the latest on politics</h3>
-		<p>see all the latest policies, trends ,improvments in governance.
-		</p>
-	</div>
+<div class="ui-page">
+	{% for article in articles %}
+		<div class="post-div" >
+			<div class="post-title" >
+				<strong>{{article.title}}</strong>
+			</div>
+			<div class="h-bar-solid" ></div>
+			<div class="user-info-div" >
+				<div class="user-dp-div" >
+					<a href="#">
+						<img src="{{article.author.image}}" height="32" width="32" />
+					</a>
+				</div>
+				<div class="user-name-div" >
+					<a href="#" class="user-link" title="{{article.author.email}}" > {{article.author.name | capfirst }}</a>
+					<div class="h-bar-solid"></div>
+					<p>[{{article.author.email}}]</p>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="h-bar-solid" ></div>
+			<div class="post-body" >
+				<p>{{article.text}}</p>
+			</div>
+			<div class="h-bar-solid"></div>
+			<div class="user-reaction-div" article-id="{{article.pk}}" >
+				<span class="user-likes" {% if article.reaction == 1 %} dais-active="true" {% else %} dais-active="false" {% endif %} >
+					{% spaceless %}
+						{% if article.likes > 0 %}
+							{% if article.reaction == 1 %}
+								<a href="#" class="user-reaction" article-likes="{{article.likes}}">liked</a><b>[{{article.likes}}]</b>
+							{% else %}
+								<a href="#" class="user-reaction" article-likes="{{article.likes}}">like</a><b>[{{article.likes}}]</b>
+							{% endif %}
+						{% else %}
+							<a href="#" class="user-reaction" article-likes="{{article.likes}}">like</a><b></b>
+						{% endif %}
+					{% endspaceless %}
+				</span> | 
+				<span class="user-dislikes" {% if article.reaction == -1 %} dais-active="true" {% else %} dais-active="false" {% endif %} >
+					{% spaceless %}
+						{% if article.dislikes > 0 %}
+							{% if article.reaction == -1 %}
+								<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">disliked</a><b>[{{article.dislikes}}]</b>
+							{% else %}
+								<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b>[{{article.dislikes}}]</b>
+							{% endif %}
+						{% else %}
+							<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b></b>
+						{% endif %}
+					{% endspaceless %}
+				</span> | 
+				<a href="/post/load-post-comments/" class="user-comment-link" >comment</a>
+			</div>
+		</div>
+	{% endfor %}
 </div>
 {% endblock %}

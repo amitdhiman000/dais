@@ -6,7 +6,7 @@ $.widget( "dias.switchtab", {
     },
     _create: function() {
         this.element.addClass("switchtab");
-        var len = this.element.find('.switchtab-items a').length;
+        var len = this.element.find('.switchtab-navbar a').length;
         console.log('tabs : '+len);
         this.options.tabs = len;
         this.options.activeTab = this.element.find('.activeswitchtab');
@@ -22,7 +22,7 @@ $.widget( "dias.switchtab", {
     },
     setTab: function() {
 		console.log('setTab');
-		this.element.find('.switchtab-content').hide();
+		this.element.find('.switchtab-item').hide();
 		var active = this.element.find('.activeswitchtab');
 		this.element.find(active.attr('rel')).show();
 	},
