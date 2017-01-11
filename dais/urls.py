@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^home/', include('home.urls')),
     url(r'^post/', include('post.urls')),
     url(r'^user/', include('user.urls')),
+    url(r'^error/', include('error.urls')),
     url(r'^daisadmin/', include('daisadmin.urls')),
     url(r'^politics/', include('politics.urls')),
 ]

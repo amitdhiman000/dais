@@ -17,7 +17,12 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r'^post-create/$', views.post_add, name='post_add'),
+	url(r'^polls/$', views.polls_view, name='polls_view'),
+	url(r'^petitions/$', views.petitions_view, name='petitions_view'),
+	url(r'^new-topic/$', views.new_topic_view, name='new_topic_view'),
+	url(r'^create-topic/$', views.create_topic, name='create_topic'),
+	url(r'^update-topic/$', views.update_topic, name='update_topic'),
+	url(r'^delete-topic/$', views.delete_topic, name='delete_topic'),
 	url(r'^post-reaction/$', views.post_reaction, name='post_reaction'),
 	url(r'^post-comment/$', views.post_comment, name='post_comment'),
 	url(r'^post-comment-reaction/$', views.post_comment_reaction, name='post_comment_reaction'),

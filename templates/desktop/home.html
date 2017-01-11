@@ -8,6 +8,7 @@
 	.user-info-div { display: table; font-size: 0.8em; }
 	.user-dp-div { display: table-cell; vertical-align: middle; padding: 0.3em; }
 	.user-name-div { display: table-cell; vertical-align: middle; padding: 0.3em; margin-left: 0.5em; }
+	.user-controls-div { display: table-cell; width:100%; padding: 0.3em; text-align: right; }
 	.user-link {}
 	.user-reaction-div { padding: 0.5em 0.5em 0.5em 0.5em; }
 	.user-reaction { width: 30%; }
@@ -23,29 +24,114 @@
 {% endblock %}
 
 {% block content %}
+<script type="text/javascript">
+	function deleteTopicPopup(pLink) {
+		console.log('+deleteTopicPopup');
+		$("#delete-dialog").dialog({
+			resizable: false,
+			height: "auto",
+			width: 400,
+			modal: true,
+			buttons: {
+				"Delete": function() {
+					$(this).dialog("close");
+					var div = $(pLink).parents('.post-div');
+					var id = div.attr('post-id');
+					console.log('name : '+ div.prop('tagName'));
+					deleteFromServer(div, id);
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+	}
+
+	function editTopicPopup(pLink) {
+		console.log('+editTopicPopup');
+		//$("#edit-dialog").find('innput[name=""]')
+		$("#edit-dialog").dialog({
+			resizable: false,
+			height: "auto",
+			width: 600,
+			modal: true,
+			buttons: {
+				"Update": function() {
+					$(this).dialog("close");
+					var div = $(pLink).parents('.post-div');
+					var id = div.attr('post-id');
+					console.log('name : '+ div.prop('tagName'));
+				},
+				"Cancel": function() {
+					$(this).dialog("close");
+				}
+			}
+		});
+	}
+
+	function deleteFromServer(pTopic, id)
+	{
+		console.log('+deleteFromServer');
+		var data = {'topic_type':1, 'topic_id':id };
+		//pTopic.hide();
+		pTopic.fadeOut('slow');
+		postRequest('/post/delete-topic/', data, function(status) {
+			if (status === true) {
+				// delete it
+				pTopic.remove();
+			} else {
+				// not deleted, some error occured.
+				pTopic.fadeIn('slow');
+				Toast.show('Failed to delete');
+			}
+		});
+	}
+</script>
+
+<div id="delete-dialog" title="Delete" style="display: none;">
+	<p>Are you sure want to delete this article ?</p>
+</div>
+
+<div id="edit-dialog" title="Edit" style="display: none;">
+	<form action="/post/update-topic/" method="POST" >
+		<h4>Title :</h4>
+		<input type="hidden" name="topic_id" value="" />
+		<input type="text" name="title" id="title" placeholder="Title" class="inputbox" value="" style="width:100%" />
+		<h4>Abstract :</h4>
+		<textarea name="text" id="text" style="width:100%; height:10em; padding:0.3em; resize: none; border: 1px solid #ddd;" placeholder="Abstract"></textarea>
+		<!--<input type="submit" name="submit" class="submit buttons" value="Submit" />-->
+	</form>
+</div>
+
 <div class="ui-page">
 	{% for article in articles %}
-		<div class="post-div" >
+		<div class="post-div" post-id="{{article.pk}}" >
 			<div class="post-title" >
 				<strong>{{article.title}}</strong>
 			</div>
 			<div class="h-bar-solid" ></div>
 			<div class="user-info-div" >
 				<div class="user-dp-div" >
-					<a href="#">
+					<a href="javascript:void(0)">
 						<img src="{{article.author.image}}" height="32" width="32" />
 					</a>
 				</div>
 				<div class="user-name-div" >
-					<a href="#" class="user-link" title="{{article.author.email}}" > {{article.author.name | capfirst }}</a>
+					<a href="javascript:void(0)" class="user-link" title="{{article.author.email}}" > {{article.author.name | capfirst }}</a>
 					<div class="h-bar-solid"></div>
 					<p>[{{article.author.email}}]</p>
+				</div>
+				<div class="user-controls-div" >
+					{% if user == article.author %}
+					<a href="javascript:void(0)" onclick="editTopicPopup(this)" class="user-link" title="Edit" > Edit </a> | 
+					<a href="javascript:void(0)" onclick="deleteTopicPopup(this)" class="user-link" title="Delete" > Delete </a>
+					{% endif %}
 				</div>
 				<div class="clear"></div>
 			</div>
 			<div class="h-bar-solid" ></div>
 			<div class="post-body" >
-				<p>{{article.text}}</p>
+				<p>{{article.text|linebreaks}}</p>
 			</div>
 			<div class="h-bar-solid"></div>
 			<div class="user-reaction-div" article-id="{{article.pk}}" >
@@ -53,12 +139,12 @@
 					{% spaceless %}
 						{% if article.likes > 0 %}
 							{% if article.reaction == 1 %}
-								<a href="#" class="user-reaction" article-likes="{{article.likes}}">liked</a><b>[{{article.likes}}]</b>
+								<a href="javascript:void(0)" class="user-reaction" article-likes="{{article.likes}}">liked</a><b>[{{article.likes}}]</b>
 							{% else %}
-								<a href="#" class="user-reaction" article-likes="{{article.likes}}">like</a><b>[{{article.likes}}]</b>
+								<a href="javascript:void(0)" class="user-reaction" article-likes="{{article.likes}}">like</a><b>[{{article.likes}}]</b>
 							{% endif %}
 						{% else %}
-							<a href="#" class="user-reaction" article-likes="{{article.likes}}">like</a><b></b>
+							<a href="javascript:void(0)" class="user-reaction" article-likes="{{article.likes}}">like</a><b></b>
 						{% endif %}
 					{% endspaceless %}
 				</span> | 
@@ -66,16 +152,16 @@
 					{% spaceless %}
 						{% if article.dislikes > 0 %}
 							{% if article.reaction == -1 %}
-								<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">disliked</a><b>[{{article.dislikes}}]</b>
+								<a href="javascript:void(0)" class="user-reaction" article-dislikes="{{article.dislikes}}">disliked</a><b>[{{article.dislikes}}]</b>
 							{% else %}
-								<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b>[{{article.dislikes}}]</b>
+								<a href="javascript:void(0)" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b>[{{article.dislikes}}]</b>
 							{% endif %}
 						{% else %}
-							<a href="#" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b></b>
+							<a href="javascript:void(0)" class="user-reaction" article-dislikes="{{article.dislikes}}">dislike</a><b></b>
 						{% endif %}
 					{% endspaceless %}
 				</span> | 
-				<a href="/post/load-post-comments/" class="user-comment-link" >comment</a>
+				<a href="javascript:void(0)" class="user-comment-link" >comment</a>
 			</div>
 		</div>
 	{% endfor %}

@@ -19,11 +19,9 @@
 		{% endif %}
 		{% for poll in polls %}
 			<div class="ui-bar ui-bar-a ui-corner-all">
-				<strong>Poll<strong>
+				<strong>{{poll.title}}</strong>
 			</div>
 	  		<div class="ui-body ui-body-a ui-corner-all">
-	  			<h3>{{poll.title}}</h3>
-				<div class="h-bar"></div>
 				<p>{{poll.text}}</p>
 				<form>
 					<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">

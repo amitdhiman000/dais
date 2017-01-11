@@ -17,8 +17,6 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-	url(r'^news/$', views.indian_news_view, name='indian_news_view'),
-	url(r'^trending/$', views.indian_trending_view, name='indian_trending_view'),
 	url(r'^latest-laws/$', views.indian_latest_laws_view, name='indian_trending_view'),
 	url(r'^latest-debates/$', views.indian_latest_debates_view, name='indian_trending_view'),
 	url(r'^latest-petitions/$', views.indian_latest_petitions_view, name='indian_trending_view'),

@@ -1,9 +1,9 @@
 from django.utils.functional import SimpleLazyObject
-from . import backends as auth
+from . import backends
 
 def get_user(request):
     if not hasattr(request, '_cached_user'):
-        request._cached_user = auth.get_user(request)
+        request._cached_user = backends.get_user(request)
     return request._cached_user
 
 class AuthMiddleware(object):

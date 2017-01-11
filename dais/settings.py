@@ -141,18 +141,19 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media_root')
 
 # some custom settings
-# dias admin pages
-DIAS_ADMIN_HOME = '/diasadmin/home'
-DIAS_ADMIN_TOPICS = '/diasadmin/topics'
-DIAD_ADMIN_TOPIC_CREATE = '/diasadmin/topic-create'
-# user pages
-USER_LOGIN_URL = '/user/signin/'
-USER_SIGNUP_URL = '/user/signup/'
-USER_SIGNUP_SUCCESS_URL = '/user/signup-success'
-USER_LOGOUT_URL = '/user/signout/'
-USER_SETTING_URL = '/user/settings/'
-USER_PROFILE_URL = '/user/profile/'
 # public pages
 HOME_PAGE_URL = '/'
 # error urls
-INVALID_REQUEST_URL = '/home/invalid-request'
+ERROR_INVALID_REQUEST_URL = '/error/invalid-request/'
+ERROR_UNDER_CONSTRUCTION_URL = '/error/under-construction/'
+# user pages
+USER_LOGIN_URL = '/user/signin/'
+USER_SIGNUP_URL = '/user/signup/'
+USER_SIGNUP_SUCCESS_URL = '/user/signup-success/'
+USER_LOGOUT_URL = '/user/signout/'
+USER_SETTING_URL = '/user/settings/'
+USER_PROFILE_URL = '/user/profile/'
+# dias admin pages
+DIAS_ADMIN_HOME = '/diasadmin/home/'
+DIAS_ADMIN_TOPICS = '/diasadmin/topics/'
+DIAD_ADMIN_TOPIC_CREATE = '/diasadmin/topic-create/'

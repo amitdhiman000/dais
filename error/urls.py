@@ -18,9 +18,6 @@ from . import views
 
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-#   url(r'^topics/(?P<name>\w+)/$', views.topic_add, name='topic_add'),
-	url(r'^news/$', views.indian_news_view, name='indian_news_view'),
-	url(r'^trending/$', views.indian_trending_view, name='indian_trending_view'),
-	url(r'^topics/$', views.topics_view, name='topics_view'),
-	url(r'^alerts/$', views.alerts_view, name='alerts_view'),
+	url(r'^invalid-request/$', views.invalid_request_view, name='invalid_request_view'),
+	url(r'^under-construction/$', views.under_construction_view, name='under_construction_view'),
 ]

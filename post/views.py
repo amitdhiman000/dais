@@ -8,6 +8,7 @@ import json
 
 ## other app models
 from user.models import User
+from home.models import Poll
 from .models import Article, ArticleReaction, ArticleComment, Topic, TopicFollower
 
 ## custom packages
@@ -18,23 +19,140 @@ from common import post_required, login_required, redirect_if_loggedin, __redire
 from pprint import pprint
 # Create your views here.
 
+
+def polls_view(request):
+	data = {'title':'Polls', 'page':'post'}
+	polls = Poll.get_user_polls(request.user)
+	data.update({'polls': polls})
+	template = device.get_template(request, 'post_polls.html')
+	return render(request, template, data)
+
+def petitions_view(request):
+	data = {'title':'Petitions', 'page':'post'}
+	#polls = Petition.get_user_petitions(request.user)
+	#data.update({'polls': polls})
+	template = device.get_template(request, 'post_petitions.html')
+	return render(request, template, data)
+
 @login_required
-def post_add(request):
-	pprint(request.POST)
-	title = request.POST.get('title', None)
-	text = request.POST.get('text', None)
-	try:
-		article = Article.create(request.user, title, text)
-	except ValueError as e:
-		print('ValueError : '+ str(e))
-	except:
-		print('Unknown error')
+def new_topic_view(request):
+	data = {'title':'New Topic', 'page':'post'}
+	template = device.get_template(request, 'post_new_topic.html')
+	return render(request, template, data)
+
+@post_required
+@login_required
+def create_topic(request):
+	pprint(request)
+	error = None
+	topic = None
+	topic_type = request.POST.get('topic_type', -1)
+	title = request.POST.get('title', '').strip(' \t\n\r')
+	text = request.POST.get('text', '').strip(' \t\n\r')
+	if title == '' or text == '':
+		error = 'Title , Abstract cannot be empty'
+	else:
+		#try:
+		if topic_type == '1':
+			topic = Article.create(request.user, title, text)
+		elif topic_type == '2':
+			topic = Poll.create(request.user, title, text)
+		elif topic_type == '3':
+			#topic = Petition.create(request.user, title, text)
+			error = 'Not supported yet'
+		else:
+			error = 'Invalid topic category'
+
+		#except ValueError as e:
+		#	print('ValueError : '+ str(e))
+		#except:
+		#	print('Unknown error')
 
 	## send the response
 	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'published'})
+		if error == None:
+			return JsonResponse({'status':204, 'message': 'published'})
+		else:
+			return JsonResponse({'status':401, 'message': error})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
+
+
+@csrf_exempt
+@post_required
+@login_required
+def update_topic(request):
+	pprint(request)
+	error = None
+	topic_type = int(request.POST.get('topic_type', -1))
+	topic_id = int(request.POST.get('topic_id', -1))
+	if topic_type == -1 or topic_id == -1:
+		error = 'Bad request'
+	else:
+		#try:
+		if topic_type == 1:
+			if Article.remove(request.user, topic_id) == False:
+				error = 'Failed to delete'
+		elif topic_type == 2:
+			topic = Poll.remove(request.user, title, text)
+		elif topic_type == 3:
+			#topic = Petition.remove(request.user, title, text)
+			error = 'Not supported yet'
+		else:
+			error = 'Invalid topic category'
+
+		#except ValueError as e:
+		#	print('ValueError : '+ str(e))
+		#except:
+		#	print('Unknown error')
+
+	## send the response
+	if request.is_ajax():
+		if error == None:
+			return JsonResponse({'status':204, 'message': 'deleted'})
+		else:
+			return JsonResponse({'status':401, 'message': error})
+	else:
+		return __redirect(request, settings.HOME_PAGE_URL)
+
+
+@csrf_exempt
+@post_required
+@login_required
+def delete_topic(request):
+	pprint(request)
+	error = None
+	topic_type = int(request.POST.get('topic_type', -1))
+	topic_id = int(request.POST.get('topic_id', -1))
+	if topic_type == -1 or topic_id == -1:
+		error = 'Bad request'
+	else:
+		#try:
+		if topic_type == 1:
+			if Article.remove(request.user, topic_id) == False:
+				error = 'Failed to delete'
+		elif topic_type == 2:
+			topic = Poll.remove(request.user, title, text)
+		elif topic_type == 3:
+			#topic = Petition.remove(request.user, title, text)
+			error = 'Not supported yet'
+		else:
+			error = 'Invalid topic category'
+
+		#except ValueError as e:
+		#	print('ValueError : '+ str(e))
+		#except:
+		#	print('Unknown error')
+
+	## send the response
+	if request.is_ajax():
+		if error == None:
+			return JsonResponse({'status':204, 'message': 'deleted'})
+		else:
+			return JsonResponse({'status':401, 'message': error})
+	else:
+		return __redirect(request, settings.HOME_PAGE_URL)
+
 
 @csrf_exempt
 @login_required

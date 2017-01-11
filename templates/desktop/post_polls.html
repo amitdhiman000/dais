@@ -1,4 +1,5 @@
 {% extends './base.html' %}
+{% load staticfiles %}
 
 {% block pagemenu %}
 {% include './post_topics_nav.html' %}
@@ -6,34 +7,78 @@
 
 {% block content %}
 <div class="ui-page" >
+	<style type="text/css" >
+		.poll-div { width: 90%; margin: 1.2em auto; padding: 1.2em; border: 1px solid #ddd; border-radius: 3px; }
+		.poll-div input[type="radio"] { display: none; }
+		.poll-div input[type="radio"] + label { background: #e9e9e9; color: #666; padding: 0.6em 1.5em; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; }
+		.poll-div input[type="radio"]:checked + label { background:#38c; color: #fff; border: 1px solid #38d; }
+		.poll-response { margin-top: 0.3em; padding: 1.0em 0em; }
+		.piechart-div { position: absolute; margin-left: 2em; margin-top: -2em; border: 1px solid #ccc; }
+	</style>
+
+	<div class="ui-bar-tbb">
+		<strong>Polls</strong>
+	</div>
 	{% if polls|length == 0 %}
-		<div class="ui-bar ui-bar-a">
-			<strong>Polls</strong>
-		</div>
-		<div class="ui-body ui-body-a">
-			<h4>No polls</h4>
-		</div>
-	{% endif %}
+	<div class="ui-body">
+		<p>No polls</p>
+	</div>
+	{% else %}
 	{% for poll in polls %}
-		<div class="ui-bar ui-bar-a ui-corner-all">
-			<strong>Poll<strong>
+	<div class="ui-body ui-body-a ui-corner-all">
+		<div class="poll-div" >
+			<div class="ui-bar-tbb" >
+				<strong>{{poll.title}}</strong>
+			</div>
+			<div class="poll-body" >
+				<p>{{poll.text}}</p>
+				<div class="poll-response" >
+					<form action="/post/poll-response/" method="POST" >
+						<input name="poll" id="radio-choice-yes" value="1" type="radio">
+						<label for="radio-choice-yes">Yes</label>
+						<input name="poll" id="radio-choice-no" value="-1" type="radio">
+						<label for="radio-choice-no">No</label>
+						<input name="poll" id="radio-choice-notsure" value="0" type="radio">
+						<label for="radio-choice-notsure">Not Sure</label>
+					</form>
+				</div>
+				<a href="javascript:showPollResults($(this))" >Show Results</a>
+				<div id="piechart" class="piechart-div" ></div>
+			</div>
 		</div>
-  		<div class="ui-body ui-body-a ui-corner-all">
-  			<h3>{{poll.title}}</h3>
-			<div class="h-bar"></div>
-			<p>{{poll.text}}</p>
-			<form>
-				<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-				    <legend></legend>
-				    <input name="poll" id="radio-choice-yes" value="1" type="radio">
-				    <label for="radio-choice-yes">Yes</label>
-				    <input name="poll" id="radio-choice-no" value="-1" type="radio">
-				    <label for="radio-choice-no">No</label>
-				    <input name="poll" id="radio-choice-notsure" value="0" type="radio">
-				    <label for="radio-choice-notsure">Not Sure</label>
-				</fieldset>
-			</form>
-  		</div>
+	</div>
 	{% endfor %}
+	{% endif %}
+	<script type="text/javascript" src="{% static 'js/google/loader.js' %}" ></script>
+	<script type="text/javascript">
+		google.charts.load('current', {'packages':['corechart']});
+		google.charts.setOnLoadCallback(drawChart);
+		function drawChart() {
+			var data = google.visualization.arrayToDataTable([
+				['Task', 'Hours per Day'],
+				['Yes',     11],
+				['No',      2],
+				['Not sure',  2],
+				]);
+
+			var options = {
+				title: 'Results',
+				is3D: true,
+				//chartArea: {width: 200},
+				//chartArea: { height: 200},
+				width: 300,
+				height: 200,
+			};
+
+			var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+			chart.draw(data, options);
+		}
+		function showPollResults(pThis) {
+			console.log('+showPollResults');
+			var pc = pThis.next('.piechart-div');
+			//(pc.is(":visible"))?pc.hide():pc.show();
+			pc.show();
+		}
+	</script>
 </div>
 {% endblock %}

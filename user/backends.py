@@ -14,7 +14,7 @@ USER_AUTH_KEY = '_user_auth'
 def get_user(request):
 	user = None
 	if USER_EMAIL_KEY in request.session:
-		uid = request.session[USER_UID_KEY]
+		uid = int(request.session[USER_UID_KEY])
 		email = request.session[USER_EMAIL_KEY]
 		name = request.session[USER_NAME_KEY]
 		level = request.session[USER_LEVEL_KEY]
