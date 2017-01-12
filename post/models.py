@@ -169,10 +169,22 @@ class Article(Post):
 		return article
 
 	@classmethod
+	def update(klass, user, article_id, title, text):
+		article = None
+		try:
+			article = klass.objects.get(id=article_id, author=user)
+			article.title = title
+			article.text = text
+			article.save()
+		except:
+			pass
+		return article
+
+	@classmethod
 	def remove(klass, user, article_id):
 		try:
-			comment = klass.objects.get(id=article_id, author=user)
-			comment.delete()
+			article = klass.objects.get(id=article_id, author=user)
+			article.delete()
 			return True
 		except:
 			return False

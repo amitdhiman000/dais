@@ -5,6 +5,7 @@
 	.post-div { margin-bottom: 0.5em; padding: 0.7em; border: 1px solid #ddd; background: #fff; }
 	.post-title { padding: 0.3em; }
 	.post-body { margin: 1.2em auto; }
+	.post-body p { white-space:pre-wrap; }
 	.user-info-div { display: table; font-size: 0.8em; }
 	.user-dp-div { display: table-cell; vertical-align: middle; padding: 0.3em; }
 	.user-name-div { display: table-cell; vertical-align: middle; padding: 0.3em; margin-left: 0.5em; }
@@ -25,7 +26,7 @@
 
 {% block content %}
 <script type="text/javascript">
-	function deleteTopicPopup(pLink) {
+	function deletePostPopup(pLink) {
 		console.log('+deleteTopicPopup');
 		$("#delete-dialog").dialog({
 			resizable: false,
@@ -33,55 +34,79 @@
 			width: 400,
 			modal: true,
 			buttons: {
-				"Delete": function() {
+				"Delete": function(){
 					$(this).dialog("close");
 					var div = $(pLink).parents('.post-div');
 					var id = div.attr('post-id');
-					console.log('name : '+ div.prop('tagName'));
-					deleteFromServer(div, id);
+					var data = {'post_type':1, 'post_id':id };
+					deletePost(data, div);
 				},
-				"Cancel": function() {
+				"Cancel": function(){
 					$(this).dialog("close");
 				}
 			}
 		});
 	}
 
-	function editTopicPopup(pLink) {
+	function editPostPopup(pLink) {
 		console.log('+editTopicPopup');
-		//$("#edit-dialog").find('innput[name=""]')
+		var div = $(pLink).parents('.post-div');
+		var id = div.attr('post-id');
+		var titleObj = div.find('.post-title strong'); 
+		var textObj = div.find('.post-body p');
+		var inputTitleObj = $("#edit-dialog").find('input[name="title"]');
+		var inputTextObj = $("#edit-dialog").find('textarea[name="text"]');
+		inputTitleObj.val(titleObj.html());
+		inputTextObj.val(textObj.html());
 		$("#edit-dialog").dialog({
 			resizable: false,
 			height: "auto",
 			width: 600,
 			modal: true,
 			buttons: {
-				"Update": function() {
+				"Update": function(){
 					$(this).dialog("close");
-					var div = $(pLink).parents('.post-div');
-					var id = div.attr('post-id');
-					console.log('name : '+ div.prop('tagName'));
+					console.log('title : '+inputTitleObj.val());
+					console.log('title : '+inputTextObj.val());
+					var data = {'post_type':1, 'post_id':id, 'post_title': inputTitleObj.val(), 'post_text': inputTextObj.val()};
+					updatePost(data, titleObj, textObj);
 				},
-				"Cancel": function() {
+				"Cancel": function(){
 					$(this).dialog("close");
 				}
 			}
 		});
 	}
 
-	function deleteFromServer(pTopic, id)
+	function updatePost(data, pTitleObj, pTextObj)
 	{
-		console.log('+deleteFromServer');
-		var data = {'topic_type':1, 'topic_id':id };
-		//pTopic.hide();
-		pTopic.fadeOut('slow');
-		postRequest('/post/delete-topic/', data, function(status) {
+		console.log('+updateToServer');
+		//console.log('data : '+ JSON.stringify(data));
+		postRequest('/post/update-post/', data, (status, result)=>{
 			if (status === true) {
-				// delete it
-				pTopic.remove();
+				// update new content
+				console.log('data : '+JSON.stringify(result));
+				pTitleObj.html(result.data.post_title);
+				pTextObj.html(result.data.post_text);
 			} else {
 				// not deleted, some error occured.
-				pTopic.fadeIn('slow');
+				Toast.show('Failed to update');
+			}
+		});
+	}
+
+	function deletePost(data, pPost)
+	{
+		console.log('+deleteFromServer');
+		//pTopic.hide();
+		pPost.fadeOut('slow');
+		postRequest('/post/delete-topic/', data, (status)=>{
+			if (status === true) {
+				// delete it
+				pPost.remove();
+			} else {
+				// not deleted, some error occured.
+				pPost.fadeIn('slow');
 				Toast.show('Failed to delete');
 			}
 		});
@@ -93,7 +118,7 @@
 </div>
 
 <div id="edit-dialog" title="Edit" style="display: none;">
-	<form action="/post/update-topic/" method="POST" >
+	<form action="/post/update-post/" method="POST" >
 		<h4>Title :</h4>
 		<input type="hidden" name="topic_id" value="" />
 		<input type="text" name="title" id="title" placeholder="Title" class="inputbox" value="" style="width:100%" />
@@ -123,15 +148,15 @@
 				</div>
 				<div class="user-controls-div" >
 					{% if user == article.author %}
-					<a href="javascript:void(0)" onclick="editTopicPopup(this)" class="user-link" title="Edit" > Edit </a> | 
-					<a href="javascript:void(0)" onclick="deleteTopicPopup(this)" class="user-link" title="Delete" > Delete </a>
+					<a href="javascript:void(0)" onclick="editPostPopup(this)" class="user-link" title="Edit" > Edit </a> | 
+					<a href="javascript:void(0)" onclick="deletePostPopup(this)" class="user-link" title="Delete" > Delete </a>
 					{% endif %}
 				</div>
 				<div class="clear"></div>
 			</div>
 			<div class="h-bar-solid" ></div>
 			<div class="post-body" >
-				<p>{{article.text|linebreaks}}</p>
+				<p>{{article.text}}</p>
 			</div>
 			<div class="h-bar-solid"></div>
 			<div class="user-reaction-div" article-id="{{article.pk}}" >

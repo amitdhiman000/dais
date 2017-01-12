@@ -55,7 +55,7 @@ function doSearch(e)
 	var data = {'keyword': key};
 	postRequest('/ajax/search/', data, (status, result) => {
 		if (status === true) {
-			var jsonData = result.text;
+			var jsonData = result.data;
 			var it = null;
 			list.html('');
 			listCont.show();
@@ -162,12 +162,12 @@ function userCommentsShow(e)
 	}
 }
 
-function loadComments(pThis, art_id, start, count)
+function loadComments(pThis, artId, start, count)
 {
 	console.log('+loadComments');
-	var data = {'article_id':art_id, 'comment_start':start, 'comment_count':count};
+	var data = {'article_id':artId, 'comment_start':start, 'comment_count':count};
 	postRequest('/post/load-post-comments/', data, (status, result) => {
-		displayComments(pThis, result.comments);
+		displayComments(pThis, result.data);
 	});
 }
 
@@ -215,7 +215,7 @@ function userCommentPost(e)
 	postRequest(action, data, (status, result) => {
 		if(status === true) {
 			var cmtCont = This.parents('.user-comments-wid').children('.user-comments');
-			appendComment(cmtCont, result.comment);
+			appendComment(cmtCont, result.data);
 			cmtBox.val('');
 			Toast.show('Posted');
 		}
@@ -296,7 +296,7 @@ function postRequest(pAction, pData, pCallback)
 					pCallback(true, jsonData);
 					break;
 				case 204:
-					pCallback(true, {'message': 'posted'});
+					pCallback(true, jsonData);
 					break;
 				default:
 					pCallback(false, jsonData);

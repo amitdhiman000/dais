@@ -35,29 +35,29 @@ def petitions_view(request):
 	return render(request, template, data)
 
 @login_required
-def new_topic_view(request):
+def new_post_view(request):
 	data = {'title':'New Topic', 'page':'post'}
 	template = device.get_template(request, 'post_new_topic.html')
 	return render(request, template, data)
 
 @post_required
 @login_required
-def create_topic(request):
+def create_post(request):
 	pprint(request)
 	error = None
-	topic = None
-	topic_type = request.POST.get('topic_type', -1)
-	title = request.POST.get('title', '').strip(' \t\n\r')
-	text = request.POST.get('text', '').strip(' \t\n\r')
+	post = None
+	post_type = request.POST.get('post_type', '-1')
+	title = request.POST.get('post_title', '').strip(' \t\n\r')
+	text = request.POST.get('post_text', '').strip(' \t\n\r')
 	if title == '' or text == '':
 		error = 'Title , Abstract cannot be empty'
 	else:
 		#try:
-		if topic_type == '1':
-			topic = Article.create(request.user, title, text)
-		elif topic_type == '2':
-			topic = Poll.create(request.user, title, text)
-		elif topic_type == '3':
+		if post_type == '1':
+			post = Article.create(request.user, title, text)
+		elif post_type == '2':
+			post = Poll.create(request.user, title, text)
+		elif post_type == '3':
 			#topic = Petition.create(request.user, title, text)
 			error = 'Not supported yet'
 		else:
@@ -81,21 +81,31 @@ def create_topic(request):
 @csrf_exempt
 @post_required
 @login_required
-def update_topic(request):
+def update_post(request):
 	pprint(request)
 	error = None
-	topic_type = int(request.POST.get('topic_type', -1))
-	topic_id = int(request.POST.get('topic_id', -1))
-	if topic_type == -1 or topic_id == -1:
+	post = None
+	post_type = int(request.POST.get('post_type', -1))
+	post_id = int(request.POST.get('post_id', -1))
+	title = request.POST.get('post_title', '').strip(' \t\n\r')
+	text = request.POST.get('post_text', '').strip(' \t\n\r')
+	if post_type == -1 or post_id == -1:
 		error = 'Bad request'
+	elif title == '' or text == '':
+		error = 'Topic title or abstract cannot be empty'
 	else:
 		#try:
-		if topic_type == 1:
-			if Article.remove(request.user, topic_id) == False:
-				error = 'Failed to delete'
-		elif topic_type == 2:
-			topic = Poll.remove(request.user, title, text)
-		elif topic_type == 3:
+		updatedObj = None
+		if post_type == 1:
+			updatedObj = Article.update(request.user, post_id, title, text)
+			if updatedObj == None:
+				error = 'Failed to update'
+			else:
+				post = {'post_title': updatedObj.title, 'post_text': updatedObj.text}
+		elif post_type == 2:
+			updatedObj = Poll.update(request.user, title, text)
+			error = 'Failed to update poll'
+		elif post_type == 3:
 			#topic = Petition.remove(request.user, title, text)
 			error = 'Not supported yet'
 		else:
@@ -109,9 +119,9 @@ def update_topic(request):
 	## send the response
 	if request.is_ajax():
 		if error == None:
-			return JsonResponse({'status':204, 'message': 'deleted'})
+			return JsonResponse({'status':200, 'message': 'success', 'data': post})
 		else:
-			return JsonResponse({'status':401, 'message': error})
+			return JsonResponse({'status':401, 'error': error})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
 
@@ -119,21 +129,21 @@ def update_topic(request):
 @csrf_exempt
 @post_required
 @login_required
-def delete_topic(request):
+def delete_post(request):
 	pprint(request)
 	error = None
-	topic_type = int(request.POST.get('topic_type', -1))
-	topic_id = int(request.POST.get('topic_id', -1))
+	post_type = int(request.POST.get('post_type', -1))
+	post_id = int(request.POST.get('post_id', -1))
 	if topic_type == -1 or topic_id == -1:
 		error = 'Bad request'
 	else:
 		#try:
-		if topic_type == 1:
-			if Article.remove(request.user, topic_id) == False:
+		if post_type == 1:
+			if Article.remove(request.user, post_id) == False:
 				error = 'Failed to delete'
-		elif topic_type == 2:
+		elif post_type == 2:
 			topic = Poll.remove(request.user, title, text)
-		elif topic_type == 3:
+		elif post_type == 3:
 			#topic = Petition.remove(request.user, title, text)
 			error = 'Not supported yet'
 		else:
@@ -156,7 +166,7 @@ def delete_topic(request):
 
 @csrf_exempt
 @login_required
-def post_comment(request):
+def create_post_comment(request):
 	pprint(request.POST)
 	#try:
 	error = None
@@ -180,7 +190,7 @@ def post_comment(request):
 	
 	if request.is_ajax():
 		if error == None:
-			return JsonResponse({'status':200, 'message': 'success', 'comment':data})
+			return JsonResponse({'status':200, 'message': 'success', 'data':data})
 		else:
 			return JsonResponse({'status':401, 'error': error})
 	else:
@@ -191,7 +201,7 @@ def post_comment(request):
 
 @csrf_exempt
 @login_required
-def reply_comment(request):
+def create_reply_comment(request):
 	pprint(request.POST)
 	#try:
 	comment_id = request.POST.get('comment_id', '')
@@ -225,7 +235,7 @@ def load_post_comments(request):
 	#pprint(objs)
 	data = list(objs)
 	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success', 'comments': data})
+		return JsonResponse({'status':200, 'message': 'success', 'data': data})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
 
@@ -246,7 +256,7 @@ def load_reply_comments(request):
 	data = serializers.serialize('json', [objs,])
 
 	if request.is_ajax():
-		return JsonResponse({'status':200, 'message': 'success', 'comments': data})
+		return JsonResponse({'status':200, 'message': 'success', 'data': data})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
 
