@@ -100,7 +100,7 @@
 		console.log('+deleteFromServer');
 		//pTopic.hide();
 		pPost.fadeOut('slow');
-		postRequest('/post/delete-topic/', data, (status)=>{
+		postRequest('/post/delete-post/', data, (status)=>{
 			if (status === true) {
 				// delete it
 				pPost.remove();

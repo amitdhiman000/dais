@@ -12,21 +12,21 @@
 			<strong>New Post </strong>
 		</div>
   		<div class="ui-body ui-body-a">
-			<form action="/post/create-topic/" method="POST" >
+			<form action="/post/create-post/" method="POST" >
 				{% csrf_token %}
 				<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
 					<legend></legend>
-					<input name="topic_type" id="radio-choice-h-6a" value="1" checked="checked" type="radio">
-					<label for="radio-choice-h-6a">Topic</label>
-					<input name="topic_type" id="radio-choice-h-6b" value="2" type="radio">
-					<label for="radio-choice-h-6b">Poll</label>
-					<input name="topic_type" id="radio-choice-h-6c" value="3" type="radio">
-					<label for="radio-choice-h-6c">Petition</label>
+					<input name="post_type" id="r-post-article" value="1" checked="checked" type="radio">
+					<label for="r-post-article">Topic</label>
+					<input name="post_type" id="r-post-poll" value="2" type="radio">
+					<label for="r-post-poll">Poll</label>
+					<input name="post_type" id="r-post-petition" value="3" type="radio">
+					<label for="r-post-petition">Petition</label>
 				</fieldset>
 				<h4>Title :</h4>
-				<input type="text" name="title" id="title" placeholder="Title" class="inputbox" style="width:100%" />
+				<input type="text" name="post_title" id="post_title" placeholder="Title" class="inputbox" style="width:100%" />
 				<h4>Abstract :</h4>
-				<textarea name="text" id="text" style="width:100%; height:10em; padding:0.3em; resize: none; border: 1px solid #ddd;" placeholder="Abstract"></textarea>
+				<textarea name="post_text" id="post_text" style="width:100%; height:10em; padding:0.3em; resize: none; border: 1px solid #ddd;" placeholder="Abstract"></textarea>
 				<input type="submit" name="submit" class="submit buttons" value="Submit" />
 			</form>
 		</div>

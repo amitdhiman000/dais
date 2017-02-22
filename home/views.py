@@ -3,7 +3,6 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template.context_processors import csrf
 from common import post_required, login_required, redirect_if_loggedin, __redirect
 from post.models import Article
-from .models import Poll, PollsResponse
 
 ##
 import device

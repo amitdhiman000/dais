@@ -30,4 +30,5 @@ urlpatterns = [
 	url(r'^reply-comment-reaction/$', views.reply_comment_reaction, name='reply_comment_reaction'),
 	url(r'^load-post-comments/$', views.load_post_comments, name='load_post_comments'),
 	url(r'^load-reply-comments/$', views.load_reply_comments, name='load_reply_comments'),
+	url(r'^poll-response/$', views.poll_response, name='poll_response'),
 ]

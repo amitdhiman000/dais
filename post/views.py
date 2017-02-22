@@ -8,8 +8,9 @@ import json
 
 ## other app models
 from user.models import User
-from home.models import Poll
-from .models import Article, ArticleReaction, ArticleComment, Topic, TopicFollower
+from .models import Article, ArticleReaction, ArticleComment
+from .models import Topic, TopicFollower
+from .models import Poll, PollsResponse
 
 ## custom packages
 import device
@@ -43,7 +44,7 @@ def new_post_view(request):
 @post_required
 @login_required
 def create_post(request):
-	pprint(request)
+	pprint(request.POST)
 	error = None
 	post = None
 	post_type = request.POST.get('post_type', '-1')
@@ -73,7 +74,7 @@ def create_post(request):
 		if error == None:
 			return JsonResponse({'status':204, 'message': 'published'})
 		else:
-			return JsonResponse({'status':401, 'message': error})
+			return JsonResponse({'status':401, 'error': error})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
 
@@ -134,7 +135,7 @@ def delete_post(request):
 	error = None
 	post_type = int(request.POST.get('post_type', -1))
 	post_id = int(request.POST.get('post_id', -1))
-	if topic_type == -1 or topic_id == -1:
+	if post_type == -1 or post_id == -1:
 		error = 'Bad request'
 	else:
 		#try:
@@ -345,5 +346,31 @@ def reply_comment_reaction(request):
 
 	if request.is_ajax():
 		return JsonResponse({'status':200, 'message': result})
+	else:
+		return __redirect(request, settings.HOME_PAGE_URL)
+
+
+@csrf_exempt
+@login_required
+def poll_response(request):
+	error = None
+	#try:
+	poll_id = int(request.POST.get('poll_id', -1))
+	poll_response = request.POST.get('poll_response', 'z')
+	user = request.user
+	if poll_response == '1':
+		PollsResponse.response_yes(user, poll_id)
+	elif poll_response == '-1':
+		PollsResponse.response_no(user, poll_id)
+	elif poll_response == '0':
+		PollsResponse.response_notsure(user, poll_id)
+	else:
+		error = 'unknown response'
+
+	if request.is_ajax():
+		if request == None:
+			return JsonResponse({'status':200, 'message': 'success'})
+		else:
+			return JsonResponse({'status':200, 'error': error})
 	else:
 		return __redirect(request, settings.HOME_PAGE_URL)
