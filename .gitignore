@@ -1,22 +1,42 @@
 *.pyc
 __pycache__/*.pyc
 
-user/*.pyc
-user/__pycache__/*.pyc
-user/migrations/*.pyc
-user/migrations/__pycache__/*.pyc
+ajax/*.pyc
+ajax/__pycache__/*.pyc
+ajax/migrations/*.pyc
+ajax/migrations/__pycache__/*.pyc
+
+daisadmin/*.pyc
+daisadmin/__pycache__/*.pyc
+daisadmin/migrations/*.pyc
+daisadmin/migrations/__pycache__/*.pyc
+
+error/*.pyc
+error/__pycache__/*.pyc
+error/migrations/*.pyc
+error/migrations/__pycache__/*.pyc
 
 home/*.pyc
 home/__pycache__/*.pyc
 home/migrations/*.pyc
 home/migrations/__pycache__/*.pyc
 
-ajax/*.pyc
-ajax/__pycache__/*.pyc
-ajax/migrations/*.pyc
-ajax/migrations/__pycache__/*.pyc
+politics/*.pyc
+politics/__pycache__/*.pyc
+politics/migrations/*.pyc
+politics/migrations/__pycache__/*.pyc
+
+post/*.pyc
+post/__pycache__/*.pyc
+post/migrations/*.pyc
+post/migrations/__pycache__/*.pyc
+
+user/*.pyc
+user/__pycache__/*.pyc
+user/migrations/*.pyc
+user/migrations/__pycache__/*.pyc
 
 dais/*.pyc
 dais/__pycache__/*.pyc
 
-#static/images/offers/
+static/static_root
