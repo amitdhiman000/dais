@@ -1,4 +1,4 @@
-{% extends 'mobile/base.html' %}
+{% extends './base.html' %}
 
 {% block styles %}
 {% endblock %}
@@ -6,9 +6,9 @@
 
 {% block content %}
 <div data-role="page" id="newtopicpage" data-dom-cache="false" >
-	{% include 'mobile/header.html' %}
+	{% include './header.html' %}
 	<div data-role="main" class="ui-content">
-		{% include 'mobile/post_topics_nav.html' %}
+		{% include './post_topics_nav.html' %}
 		<br />
 		<div class="ui-corner-all custom-corners">
 			<!--<div class="ui-bar ui-bar-c" >-->
@@ -35,6 +35,6 @@
 		</div>
 	</div>
 
-	{% include 'mobile/footer.html' %}
+	{% include './footer.html' %}
 </div>
 {% endblock %}
